@@ -1,0 +1,35 @@
+.bullet {
+  &-wrapper {
+    padding: .4em 1em;
+    border: 2px solid #fff;
+    border-radius: 2.2em;
+    position: relative;
+    box-shadow: 0 0 .8em rgba($color: #000000, $alpha: 0.5);
+    word-break: keep-all;
+    white-space: pre-wrap;
+  }
+
+  &-msg {
+    font-size: 1.8em;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  &-head {
+    position: absolute;
+    left: -4.6em;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4em;
+    height: 4em;
+    border-radius: 50%;
+    border: 2px soild #eee;
+    box-shadow: 0 0 .8em rgba($color: #000000, $alpha: 0.8);
+
+    &-image {
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
