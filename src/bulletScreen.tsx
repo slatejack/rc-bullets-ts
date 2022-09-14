@@ -1,11 +1,11 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { defaultOptions, getContainer } from '@/utils/bulletHelper';
-import { pushItemObj, ScreenOpsTypes } from '@/interface/screen';
+import { pushItem, screenElement, ScreenOpsTypes } from '@/interface/screen';
 import { isPlainObject } from '@/utils/utils';
 import StyledBullet from './styleBullet';
-type screenElement = string | HTMLElement;
-type pushItem = string | pushItemObj | ReactElement;
+
+
 type queueType = [pushItem, HTMLElement, (string | undefined)];
 class BulletScreen {
   target: HTMLElement; // dom容器对象实例

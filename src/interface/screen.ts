@@ -1,5 +1,8 @@
 import BulletScreen from '@/bulletScreen';
+import { ReactElement } from 'react';
 
+type screenElement = string | HTMLElement;
+type pushItem = string | pushItemObj | ReactElement;
 interface ScreenOpsTypes {
   trackHeight: number;
   gap: string;
@@ -23,6 +26,8 @@ interface pushItemObj {
   backgroundColor: string;
 }
 export type {
+  pushItem,
+  screenElement,
   ScreenOpsTypes,
   pushItemObj,
 };
