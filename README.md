@@ -9,13 +9,7 @@
 npm:
 
 ```bash
-npm install --save rc-bullets
-```
-
-yarn:
-
-```bash
-yarn add rc-bullets
+npm install --save rc-bullets-ts
 ```
 
 ## 初始化一个简单的弹幕场景
