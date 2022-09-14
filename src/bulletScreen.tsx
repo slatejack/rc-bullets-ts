@@ -11,7 +11,7 @@ class BulletScreen {
   target: HTMLElement; // dom容器对象实例
   options = defaultOptions;
   bullets: HTMLElement[] = []; // 弹幕队列
-  allParuesd = false; // 暂停全部弹幕移动
+  allPaused = false; // 暂停全部弹幕移动
   allHide = false; // 隐藏全部弹幕
   tracks: string[] = []; // 弹幕轨道
   queues: queueType[] = []; // 等待队列
@@ -29,6 +29,7 @@ class BulletScreen {
       this.target = ele;
     }
     this.initBulletTrack(trackHeight);
+    this.initBulletAnimate(this.target);
   }
 
   /**
@@ -54,9 +55,9 @@ class BulletScreen {
     style.classList.add(animateClass);
     document.head.appendChild(style);
     const { width } = screen.getBoundingClientRect();
-    const from = `from {visibility: visible; transform: translateX(${width}px);}`;
-    const to = 'to {visibility: visible; transform: translateX(-100%); }';
-    style.sheet?.insertRule(`@keyframs RightToLeft {${from} ${to}}`, 0);
+    const from = `from { visibility: visible; transform: translateX(${width}px); }`;
+    const to = 'to { visibility: visible; transform: translateX(-100%); }';
+    style.sheet?.insertRule(`@keyframes RightToLeft { ${from} ${to} }`, 0);
   }
 
   /**
@@ -102,7 +103,7 @@ class BulletScreen {
     // 加入当前存在的弹幕列表
     this.bullets.push(bulletContainer);
     const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
-    if (currIdletrack === -1 && this.allParuesd) {
+    if (currIdletrack === -1 && this.allPaused) {
       // 全部暂停
       this.queues.push([item, bulletContainer, top]);
     } else {
@@ -181,6 +182,56 @@ class BulletScreen {
       }
     );
   };
+
+  _toggleAnimateStatus = (id: string | null, status = 'paused') => {
+    const currItem = this.bullets.find(item => item.id == id);
+    if (currItem) {
+      currItem.style.animationPlayState = status;
+      return;
+    }
+
+    this.allPaused = status === 'paused' ? true : false;
+    this.bullets.forEach(item => {
+      item.style.animationPlayState = status;
+    });
+  };
+  pause(id: string | null = null) {
+    this._toggleAnimateStatus(id, 'paused');
+  }
+  resume(id: string | null = null) {
+    this._toggleAnimateStatus(id, 'running');
+  }
+  hide() {
+    this.allHide = true;
+    this.bullets.forEach(item => {
+      item.style.opacity = '0';
+    });
+  }
+  show() {
+    this.allHide = false;
+    this.bullets.forEach(item => {
+      item.style.opacity = '1';
+    });
+  }
+  clear(id = null) {
+    const currItem = this.bullets.find(item => item.id == id);
+    if (currItem) {
+      ReactDOM.unmountComponentAtNode(currItem);
+      currItem.remove();
+      this.bullets = this.bullets.filter(function (item) {
+        return item.id !== id;
+      });
+      return;
+    }
+    this.bullets.forEach(item => {
+      ReactDOM.unmountComponentAtNode(item);
+      item.remove();
+    });
+    const { height } = this.target.getBoundingClientRect();
+    this.tracks = new Array(Math.floor(height / this.options.trackHeight)).fill('idle');
+    this.queues = [];
+    this.bullets = [];
+  }
 }
 
 export default BulletScreen;
