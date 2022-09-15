@@ -101,7 +101,7 @@ export default function Demo() {
 
 ## TO DO
 - &#x2705; react hook
-- 暂时还未想好，欢迎提iessues~
+- 暂时还未想好，欢迎提issues~
 
 ## 本地开发指引
 1. git clone
