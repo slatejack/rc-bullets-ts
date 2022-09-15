@@ -1,6 +1,6 @@
 {
   "name": "rc-bullets-ts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "一个简单的react弹幕库",
   "main": "dist/main.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "prepare": "husky install"
   },
   "author": "slatejack",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@types/color-convert": "^2.0.0",
     "@types/react": "^18.0.19",
@@ -23,6 +23,7 @@
     "stylelint": "^14.11.0",
     "stylelint-scss": "^4.3.0"
   },
+  "repository": "slatejack/rc-bullets-ts",
   "devDependencies": {
     "@babel/core": "^7.19.0",
     "@typescript-eslint/eslint-plugin": "^5.37.0",
