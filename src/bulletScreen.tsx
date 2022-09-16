@@ -6,7 +6,7 @@ import { isPlainObject } from '@/utils/utils';
 import StyledBullet from './styleBullet';
 
 
-type queueType = [pushItem, HTMLElement, (string | undefined)];
+type queueType = [pushItem, HTMLDivElement, (string | undefined)];
 class BulletScreen {
   target: HTMLElement; // dom容器对象实例
   options = defaultOptions;
@@ -89,6 +89,7 @@ class BulletScreen {
     } else {
       this.tracks[idx] = 'running';
     }
+    console.log('getTrack', idx);
     return idx;
   }
 
@@ -99,11 +100,10 @@ class BulletScreen {
       ...options,
       currScreen: this,
     });
-
     // 加入当前存在的弹幕列表
     this.bullets.push(bulletContainer);
     const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
-    if (currIdletrack === -1 && this.allPaused) {
+    if (currIdletrack === -1 || this.allPaused) {
       // 全部暂停
       this.queues.push([item, bulletContainer, top]);
     } else {
@@ -142,7 +142,7 @@ class BulletScreen {
     return <></>;
   }
 
-  private _render = (item: pushItem, container: HTMLElement, track: number, top?: string) => {
+  private _render(item: pushItem, container: HTMLDivElement, track: number, top?: string) {
     this.target.appendChild(container);
     const { gap, trackHeight } = this.options;
     ReactDOM.render(
@@ -151,16 +151,15 @@ class BulletScreen {
       () => {
         const trackTop = track * trackHeight;
         container.dataset.track = `${track}`;
-        container.style.top = top ? top : `${trackTop}px`;
+        container.style.top = typeof (top) !== 'undefined' ? top : `${trackTop}px`;
         const options = {
-          root: this.target,
           rootMargin: `0px ${gap} 0px 0px`,
-          threshold: 1.0,
+          threshold: 1.0, // 完全处于可视范围中
         };
-        const observe = new IntersectionObserver(enteries => {
+        const observer = new IntersectionObserver(enteries => {
           enteries.forEach(entry => {
-            // 完全处于可视范围中
-            const { intersectionRatio, target } = entry;
+            const { intersectionRatio, target, boundingClientRect, intersectionRect } = entry;
+            console.log('bullet id', target.id, intersectionRatio, boundingClientRect, intersectionRect);
             if (intersectionRatio >= 1) {
               const curTaget = target as HTMLElement;
               const trackIdx = typeof (curTaget.dataset.track) === 'undefined' ? undefined : +curTaget.dataset.track;
@@ -178,10 +177,10 @@ class BulletScreen {
             }
           });
         }, options);
-        observe.observe(container);
+        observer.observe(container);
       }
     );
-  };
+  }
 
   _toggleAnimateStatus = (id: string | null, status = 'paused') => {
     const currItem = this.bullets.find(item => item.id == id);

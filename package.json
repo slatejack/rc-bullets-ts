@@ -1,6 +1,6 @@
 {
   "name": "rc-bullets-ts",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "一个简单的react弹幕库",
   "main": "dist/main.js",
   "module": "dist/main.js",
@@ -45,6 +45,7 @@
     "lint-staged": "^13.0.3",
     "sass-loader": "^13.0.2",
     "style-loader": "^3.3.1",
+    "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "^9.3.1",
     "typescript": "^4.8.3",
     "webpack": "^5.74.0",
@@ -55,6 +56,9 @@
       "npm run lint"
     ]
   },
+  "files": [
+    "dist"
+  ],
   "_moduleAliases": {
     "@": "src"
   }
