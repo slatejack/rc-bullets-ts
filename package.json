@@ -1,8 +1,9 @@
 {
   "name": "rc-bullets-ts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "一个简单的react弹幕库",
   "main": "dist/main.js",
+  "module": "dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "rimraf ./dist && cross-env NODE_ENV=development npx webpack --config ./config/webpack.config",
