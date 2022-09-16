@@ -30,7 +30,7 @@ const getContainer = (opts: containerOpsType) => {
     animateTimeFun,
   } = opts;
   // 创建单条弹幕容器
-  const bulletContainer = <HTMLDivElement>document.createElement('div');
+  const bulletContainer = <HTMLElement>document.createElement('div');
   bulletContainer.id = Math.random()
     .toString(36)
     .substring(2);

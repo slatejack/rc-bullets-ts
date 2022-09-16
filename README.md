@@ -4,6 +4,9 @@
 > 💻 原项目地址：https://github.com/zerosoul/rc-bullets  
 [![NPM](https://img.shields.io/npm/v/rc-bullets-ts.svg)](https://www.npmjs.com/package/rc-bullets-ts) [![NPM downloads](https://img.shields.io/npm/dm/rc-bullets-ts.svg)](http://npmjs.com/package/rc-bullets-ts) 
 
+## 注意！
+> ⚠️ 如之前安装版本存在弹幕大面积重合及消失问题，请尝试升级npm库到最新版本。
+
 ## 安装
 
 npm:

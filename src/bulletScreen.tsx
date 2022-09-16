@@ -6,7 +6,7 @@ import { isPlainObject } from '@/utils/utils';
 import StyledBullet from './styleBullet';
 
 
-type queueType = [pushItem, HTMLDivElement, (string | undefined)];
+type queueType = [pushItem, HTMLElement, (string | undefined)];
 class BulletScreen {
   target: HTMLElement; // dom容器对象实例
   options = defaultOptions;
@@ -20,11 +20,11 @@ class BulletScreen {
     this.options = { ...this.options, ...opts };
     const { trackHeight } = this.options;
     if (typeof ele === 'string') {
-      const target = document.querySelector(ele) as HTMLElement;
+      const target = document.querySelector(ele);
       if (!target) {
         throw new Error('The display target dose not exist');
       }
-      this.target = target;
+      this.target = target as HTMLElement;
     } else {
       this.target = ele;
     }
@@ -41,7 +41,7 @@ class BulletScreen {
     this.tracks = new Array(Math.floor(height / trackHeight)).fill('idle'); // idle代表闲置状态的轨道
     const { position } = getComputedStyle(this.target);
     if (position === 'static') {
-      this.target.style.position === 'relative';
+      this.target.style.position = 'relative';
     }
   }
 
@@ -125,6 +125,7 @@ class BulletScreen {
       ReactDOM.unmountComponentAtNode(bulletContainer);// react移除虚拟dom
       bulletContainer.remove(); // 移除真实dom
     });
+
     return bulletContainer.id;
   }
 
@@ -142,7 +143,7 @@ class BulletScreen {
     return <></>;
   }
 
-  private _render(item: pushItem, container: HTMLDivElement, track: number, top?: string) {
+  private _render = (item: pushItem, container: HTMLElement, track: number, top?: string) => {
     this.target.appendChild(container);
     const { gap, trackHeight } = this.options;
     ReactDOM.render(
@@ -153,13 +154,15 @@ class BulletScreen {
         container.dataset.track = `${track}`;
         container.style.top = typeof (top) !== 'undefined' ? top : `${trackTop}px`;
         const options = {
+          root: this.target,
           rootMargin: `0px ${gap} 0px 0px`,
           threshold: 1.0, // 完全处于可视范围中
         };
         const observer = new IntersectionObserver(enteries => {
-          enteries.forEach(entry => {
-            const { intersectionRatio, target, boundingClientRect, intersectionRect } = entry;
-            console.log('bullet id', target.id, intersectionRatio, boundingClientRect, intersectionRect);
+          for (const entry of enteries) {
+            const { intersectionRatio, target, isIntersecting } = entry;
+            console.log('bullet id', target.id, intersectionRatio, isIntersecting);
+            console.log('resTarget', this.target, entry);
             if (intersectionRatio >= 1) {
               const curTaget = target as HTMLElement;
               const trackIdx = typeof (curTaget.dataset.track) === 'undefined' ? undefined : +curTaget.dataset.track;
@@ -175,12 +178,12 @@ class BulletScreen {
                 }
               }
             }
-          });
+          }
         }, options);
         observer.observe(container);
       }
     );
-  }
+  };
 
   _toggleAnimateStatus = (id: string | null, status = 'paused') => {
     const currItem = this.bullets.find(item => item.id == id);

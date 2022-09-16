@@ -18,7 +18,7 @@ module.exports = {
         terserOptions: {
           compress: {
             ecma: 5,
-            drop_console: true,
+            drop_console: !isDev,
           },
         },
       }),
