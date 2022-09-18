@@ -67,7 +67,7 @@ class BulletScreen {
   private _getTrack() {
     const readyIdxs: number[] = [];
     let idx = -1;
-    // 优先取得闲置状态的轨道
+    // 优先取空闲状态的
     this.tracks.forEach((status, index) => {
       if (status === 'idle') {
         readyIdxs.push(index);
@@ -77,7 +77,7 @@ class BulletScreen {
       idx = readyIdxs[Math.floor(Math.random() * readyIdxs.length)];
     }
     if (idx === -1) {
-      // 其次选择可以接上状态的
+      // 其次是可以接上状态的
       this.tracks.forEach((status, index) => {
         if (status === 'feed') {
           readyIdxs.push(index);
@@ -86,10 +86,10 @@ class BulletScreen {
       if (readyIdxs.length) {
         idx = readyIdxs[Math.floor(Math.random() * readyIdxs.length)];
       }
-    } else {
+    }
+    if (idx !== -1) {
       this.tracks[idx] = 'running';
     }
-    console.log('getTrack', idx);
     return idx;
   }
 
