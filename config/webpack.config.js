@@ -1,12 +1,11 @@
-const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const path = require('path');
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 const resolve = filePath => path.join(__dirname, filePath);
 const isDev = process.env.NODE_ENV === 'development';
-console.log('env:', process.env.NODE_ENV);
 
 module.exports = {
   entry: './app.ts',

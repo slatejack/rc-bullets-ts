@@ -87,6 +87,7 @@ class BulletScreen {
         idx = readyIdxs[Math.floor(Math.random() * readyIdxs.length)];
       }
     }
+    // 如果此时状态值不等于-1，则说明该轨道在占用中
     if (idx !== -1) {
       this.tracks[idx] = 'running';
     }
@@ -130,7 +131,6 @@ class BulletScreen {
   }
 
   getRenderDom(Item: pushItem) {
-    // 待优化, 判断是否为styleBullet组件
     if (React.isValidElement(Item)) {
       return Item;
     }
