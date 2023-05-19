@@ -20,10 +20,10 @@ interface ScreenOpsTypes {
 }
 interface pushItemObj {
   msg: string;
-  head: string;
-  color: string;
-  size: 'small' | 'normal' | 'large' | 'huge' | string;
-  backgroundColor: string;
+  head?: string;
+  color?: string;
+  size?: 'small' | 'normal' | 'large' | 'huge' | string;
+  backgroundColor?: string;
 }
 export type {
   pushItem,
