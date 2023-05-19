@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === 'development';
 console.log('env:', process.env.NODE_ENV);
 
 module.exports = {
-  entry: './app.ts',
+  entry: './src/app.ts',
   devtool: isDev ? 'eval-cheap-source-map' : 'hidden-source-map',
   optimization: {
     minimizer: [
