@@ -2,7 +2,7 @@
 > 👏 基于 rc-bullets 库使用`typescript`结合`webpack`进行重构，为后续项目开发提供更安全的类型支持与拓展性支持。感谢原作者：[@zerosoul](https://github.com/zerosoul) 提供支持  
 > 🌈 基于 CSS3 Animation，使用 React 构建，可扩展，高性能。  
 > 💻 原项目地址：https://github.com/zerosoul/rc-bullets  
-[![NPM](https://img.shields.io/npm/v/rc-bullets-ts.svg)](https://www.npmjs.com/package/rc-bullets-ts) [![NPM downloads](https://img.shields.io/npm/dm/rc-bullets-ts.svg)](http://npmjs.com/package/rc-bullets-ts) 
+[![NPM](https://img.shields.io/npm/v/rc-bullets-ts.svg)](https://www.npmjs.com/package/rc-bullets-ts) [![NPM downloads](https://img.shields.io/npm/dm/rc-bullets-ts.svg)](http://npmjs.com/package/rc-bullets-ts)
 
 ## 注意！
 > ⚠️ 如之前安装版本存在弹幕大面积重合及消失问题，请尝试升级npm库到最新版本。
@@ -18,53 +18,67 @@ npm install --save rc-bullets-ts
 ## 初始化一个简单的弹幕场景
 
 ```jsx
-import React, { useEffect, useState } from 'react';
-import BulletScreen, { StyledBullet } from 'rc-bullets-ts';
+import BulletScreen, { StyledBullet } from 'rc-bullets-ts'
+import { useEffect, useRef, useState } from 'react'
 
-const headUrl='https://zerosoul.github.io/rc-bullets/assets/img/heads/girl.jpg';
-export default function Demo() {
-  // 弹幕屏幕
-  const [screen, setScreen] = useState(null);
-  // 弹幕内容
-  const [bullet, setBullet] = useState('');
+const headUrl =
+  'https://zerosoul.github.io/rc-bullets/assets/img/heads/girl.jpg'
+
+const Demo = () => {
+  const screenElRef = useRef<HTMLDivElement>(null)
+  const screenRef = useRef<InstanceType<typeof BulletScreen>>()
+  const [bullet, setBullet] = useState('')
+
   useEffect(() => {
     // 给页面中某个元素初始化弹幕屏幕，一般为一个大区块。此处的配置项全局生效
-    let s = new BulletScreen('.screen',{duration:20});
-    // or
-    // let s=new BulletScreen(document.querySelector('.screen));
-    setScreen(s);
-  }, []);
-  // 弹幕内容输入事件处理
-  const handleChange = ({ target: { value } }) => {
-    setBullet(value);
-  };
-  // 发送弹幕
-  const handleSend = () => {
-    if (bullet) {
-      // push 纯文本
-      screen.push(bullet);
-      // or 使用 StyledBullet
+    screenRef.current = new BulletScreen(screenElRef.current, { duration: 20 })
+  }, [])
 
-      screen.push(
-        <StyledBullet
-          head={headUrl}
-          msg={bullet}
-          backgroundColor={'#fff'}
-          size='large'
-        />
-      );
-      // or 还可以这样使用，效果等同使用 StyledBullet 组件
-      screen.push({msg:bullet,head:headUrl,color:"#eee" size="large" backgroundColor:"rgba(2,2,2,.3)"})
-    }
-  };
   return (
     <main>
-      <div className="screen" style={{ width: '100vw', height: '80vh' }}></div>
-      <input value={bullet} onChange={handleChange} />
-      <button onClick={handleSend}>发送</button>
+      <div ref={screenElRef} style={{ width: '100vw', height: '80vh' }} />
+      <input
+        value={bullet}
+        onChange={({ target: { value } }) => {
+          // 弹幕内容输入事件处理
+          setBullet(value)
+        }}
+      />
+      <button
+        onClick={() => {
+          // 发送弹幕
+          if (bullet && screenRef.current) {
+            // 纯文本调用形式
+            screenRef.current.push(bullet)
+
+            // StyledBullet 调用形式
+            screenRef.current.push(
+              <StyledBullet
+                head={headUrl}
+                msg={bullet}
+                backgroundColor={'#fff'}
+                size="large"
+              />
+            )
+
+            // 对象调用形式
+            screenRef.current.push({
+              msg: bullet,
+              head: headUrl,
+              color: '#eee',
+              size: 'large',
+              backgroundColor: 'rgba(2, 2, 2, .3)',
+            })
+          }
+        }}
+      >
+        发送
+      </button>
     </main>
-  );
+  )
 }
+
+export default Demo
 ```
 
 ## 特性

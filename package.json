@@ -4,10 +4,12 @@
   "description": "一个简单的react弹幕库",
   "main": "dist/main.js",
   "module": "dist/main.js",
+  "types": "typings/app.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "emitDeclaration": "tsc --emitDeclarationOnly",
     "dev": "rimraf ./dist && cross-env NODE_ENV=development npx webpack --config ./config/webpack.config",
-    "build": "rimraf ./dist && cross-env NODE_ENV=production npx webpack --config ./config/webpack.config",
+    "build": "rimraf ./typings && npm run emitDeclaration && rimraf ./dist && cross-env NODE_ENV=production npx webpack --config ./config/webpack.config",
     "lint": "eslint --config .eslintrc.js --ext .jsx,.js,.ts,.tsx --fix",
     "prepare": "husky install"
   },
@@ -35,7 +37,6 @@
     "css-loader": "^6.7.1",
     "eslint": "^8.23.1",
     "eslint-config-standard-with-typescript": "^23.0.0",
-    "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.2.5",
     "eslint-plugin-promise": "^6.0.1",

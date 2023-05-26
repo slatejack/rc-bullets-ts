@@ -8,7 +8,7 @@ const resolve = filePath => path.join(__dirname, filePath);
 const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
-  entry: './app.ts',
+  entry: './src/app.ts',
   devtool: isDev ? 'eval-cheap-source-map' : 'hidden-source-map',
   optimization: {
     minimizer: [
