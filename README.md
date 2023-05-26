@@ -8,8 +8,7 @@
 
 ## 注意！
 
-> ⚠️ 更新至v1.1.0版本后，修复了之前版本useBullentScreen拼写问题，由`useBullentScreen` -> `useBulletScreen`
-> ，感谢[@hellohejinyu](https://github.com/hellohejinyu)指出
+> ⚠️ 更新至v1.1.0版本后，修复了之前版本useBullentScreen拼写问题，由`useBullentScreen` -> `useBulletScreen`感谢[@hellohejinyu](https://github.com/hellohejinyu)指出  
 > ⚠️ 如之前安装版本存在弹幕大面积重合及消失问题，请尝试升级npm库到最新版本。
 
 ## 安装
