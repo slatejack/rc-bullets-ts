@@ -19,19 +19,19 @@ declare class BulletScreen {
      * @param screen
      */
     initBulletAnimate(screen: HTMLElement): void;
-    /**
-     * 获取播放轨道
-     * @returns
-     */
-    private _getTrack;
     push(item: pushItem, opts?: ScreenOpsTypes | object): string;
     getRenderDom(Item: pushItem): JSX.Element;
-    private _render;
     _toggleAnimateStatus: (id: string | null, status?: string) => void;
     pause(id?: string | null): void;
     resume(id?: string | null): void;
     hide(): void;
     show(): void;
     clear(id?: null): void;
+    /**
+     * 获取播放轨道
+     * @returns
+     */
+    private _getTrack;
+    private _render;
 }
 export default BulletScreen;
