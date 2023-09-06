@@ -8,8 +8,14 @@
 
 ## 注意！
 
-> ⚠️ 更新至v1.1.0版本后，修复了之前版本useBullentScreen拼写问题，由`useBullentScreen` -> `useBulletScreen`感谢[@hellohejinyu](https://github.com/hellohejinyu)指出  
+> ⚠️ 更新至v1.1.1版本后，修复了之前版本中暂停全部弹幕后继续播放时可能导致轨道计算出错的问题
+> ⚠️ 更新至v1.1.0版本后，修复了之前版本useBullentScreen拼写问题，由`useBullentScreen` -> `useBulletScreen`
+> 感谢[@hellohejinyu](https://github.com/hellohejinyu)指出  
 > ⚠️ 如之前安装版本存在弹幕大面积重合及消失问题，请尝试升级npm库到最新版本。
+
+## 体验
+
+> 下载`demo`文件夹，运行`npm install`完成依赖安装后，执行`npm run start`即可体验项目
 
 ## 安装
 
@@ -17,6 +23,12 @@ npm:
 
 ```bash
 npm install --save rc-bullets-ts
+```
+
+yarn:
+
+```bash
+yarn add rc-bullets-ts
 ```
 
 ## 初始化一个简单的弹幕场景
