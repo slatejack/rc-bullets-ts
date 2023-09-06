@@ -8,7 +8,7 @@
 
 ## 注意！
 
-> ⚠️ 更新至v1.1.1版本后，修复了之前版本中暂停全部弹幕后继续播放时可能导致轨道计算出错的问题
+> ⚠️ 更新至v1.1.1版本后，修复了之前版本中暂停全部弹幕后继续播放时可能导致轨道计算出错的问题  
 > ⚠️ 更新至v1.1.0版本后，修复了之前版本useBullentScreen拼写问题，由`useBullentScreen` -> `useBulletScreen`
 > 感谢[@hellohejinyu](https://github.com/hellohejinyu)指出  
 > ⚠️ 如之前安装版本存在弹幕大面积重合及消失问题，请尝试升级npm库到最新版本。
@@ -112,19 +112,19 @@ export default Demo
 
 `option`：
 
-| 选项             | 含义        | 值类型           | 默认值       | 备注                                                                                                            |
-|----------------|-----------|---------------|-----------|---------------------------------------------------------------------------------------------------------------|
-| top            | 弹幕位置      | string        | undefined | 自已强制定制距离顶部的高度，格式同 CSS 中的 top                                                                                  |
-| trackHeight    | 轨道高度      | number        | 50        | 均分轨道的高度                                                                                                       |
-| onStart        | 自定义动画开始函数 | function      | null      | e.g.(bulletId,screen)=>{//do something}可以自定义一些动作，比如播放某个音效，在特定时间暂停该弹幕：screen.pause(bulletId)                   |
-| onEnd          | 自定义动画结束函数 | function      | null      | e.g.(bulletId,screen)=>{//do something}可以自定义一些动作，比如播放某个音效                                                     |
-| pauseOnClick   | 鼠标点击暂停    | boolean       | false     | 再次点击继续                                                                                                        |
-| pauseOnHover   | 鼠标悬停暂停    | boolean       | true      | 鼠标进入暂停，离开继续                                                                                                   |
-| loopCount      | 循环次数      | number/string | 1         | 值为‘infinite’时，表示无限循环                                                                                          |
-| duration       | 滚动时长      | number/string | 10        | 数字则单位为‘秒’，字符串则支持'10s'和'300ms'两种单位                                                                             |
-| delay          | 延迟        | number/string | 0         | 数字则单位为‘秒’，字符串则支持'10s'和'300ms'两种单位                                                                             | [animation-delay](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-delay)支持的所有值 |
-| direction      | 动画方向      | string        | normal    | [animation-direction](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)支持的所有值             |
-| animateTimeFun | 动画函数      | string        | linear:匀速 | [animation-timing-function](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function)支持的所有值 |
+| 选项           | 含义               | 值类型        | 默认值      | 备注                                                                                                                      |
+| -------------- | ------------------ | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- |
+| top            | 弹幕位置           | string        | undefined   | 自已强制定制距离顶部的高度，格式同 CSS 中的 top                                                                           |
+| trackHeight    | 轨道高度           | number        | 50          | 均分轨道的高度                                                                                                            |
+| onStart        | 自定义动画开始函数 | function      | null        | e.g.(bulletId,screen)=>{//do something}可以自定义一些动作，比如播放某个音效，在特定时间暂停该弹幕：screen.pause(bulletId) |
+| onEnd          | 自定义动画结束函数 | function      | null        | e.g.(bulletId,screen)=>{//do something}可以自定义一些动作，比如播放某个音效                                               |
+| pauseOnClick   | 鼠标点击暂停       | boolean       | false       | 再次点击继续                                                                                                              |
+| pauseOnHover   | 鼠标悬停暂停       | boolean       | true        | 鼠标进入暂停，离开继续                                                                                                    |
+| loopCount      | 循环次数           | number/string | 1           | 值为‘infinite’时，表示无限循环                                                                                            |
+| duration       | 滚动时长           | number/string | 10          | 数字则单位为‘秒’，字符串则支持'10s'和'300ms'两种单位                                                                      |
+| delay          | 延迟               | number/string | 0           | 数字则单位为‘秒’，字符串则支持'10s'和'300ms'两种单位                                                                      | [animation-delay](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-delay)支持的所有值 |
+| direction      | 动画方向           | string        | normal      | [animation-direction](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)支持的所有值                   |
+| animateTimeFun | 动画函数           | string        | linear:匀速 | [animation-timing-function](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function)支持的所有值       |
 
 - 弹幕清屏：`screen.clear([<bulletId>])`，无参则清除全部
 - 暂停弹幕：`screen.pause([<bulletId>])`，无参则暂停全部
