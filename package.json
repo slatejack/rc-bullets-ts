@@ -58,7 +58,8 @@
     ]
   },
   "files": [
-    "dist"
+    "dist",
+    "typings"
   ],
   "_moduleAliases": {
     "@": "src"
