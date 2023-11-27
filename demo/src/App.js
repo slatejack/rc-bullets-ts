@@ -22,6 +22,9 @@ function App() {
           msg={barrageInfo.msg}
           backgroundColor="rgba(0,0,0,0.4)"
         />,
+        {
+          bottom: '9px', // 指定所有弹幕距离容器底部距离为9px
+        }
       );
     }
   };
