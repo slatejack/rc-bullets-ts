@@ -1,5 +1,5 @@
-import { pushItem, screenElement, ScreenOpsTypes } from '@/interface/screen';
-declare type queueType = [pushItem, HTMLElement, (string | undefined)];
+import { BulletStyle, pushItem, screenElement, ScreenOpsTypes } from '@/interface/screen';
+declare type queueType = [pushItem, HTMLElement, (BulletStyle | undefined)];
 declare class BulletScreen {
     target: HTMLElement;
     options: ScreenOpsTypes;
@@ -19,7 +19,7 @@ declare class BulletScreen {
      * @param screen
      */
     initBulletAnimate(screen: HTMLElement): void;
-    push(item: pushItem, opts?: ScreenOpsTypes | object): string;
+    push(item: pushItem, opts: Partial<ScreenOpsTypes>): string;
     getRenderDom(Item: pushItem): JSX.Element;
     _toggleAnimateStatus: (id: string | null, status?: string) => void;
     pause(id?: string | null): void;

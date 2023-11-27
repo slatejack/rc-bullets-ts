@@ -11,6 +11,7 @@ interface ScreenOpsTypes {
     onStart?: (bulletId: string, screen: BulletScreen) => void;
     onEnd?: (bulletId: string, screen: BulletScreen) => void;
     top?: string;
+    bottom?: string;
     loopCount: number;
     duration: number;
     delay: number;
@@ -24,4 +25,8 @@ interface pushItemObj {
     size?: 'small' | 'normal' | 'large' | 'huge' | string;
     backgroundColor?: string;
 }
-export type { pushItem, screenElement, ScreenOpsTypes, pushItemObj, };
+interface BulletStyle {
+    top?: string;
+    bottom?: string;
+}
+export type { pushItem, screenElement, ScreenOpsTypes, pushItemObj, BulletStyle, };
