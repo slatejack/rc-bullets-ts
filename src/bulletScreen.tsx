@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {defaultOptions, getContainer} from '@/utils/bulletHelper';
-import {pushItem, screenElement, ScreenOpsTypes} from '@/interface/screen';
+import {BulletStyle, pushItem, screenElement, ScreenOpsTypes} from '@/interface/screen';
 import {isPlainObject} from '@/utils/utils';
 import StyledBullet from './styleBullet';
 
 
-type queueType = [pushItem, HTMLElement, (string | undefined)];
+type queueType = [pushItem, HTMLElement, (BulletStyle | undefined)];
 
 class BulletScreen {
     target: HTMLElement; // dom容器对象实例
@@ -61,21 +61,25 @@ class BulletScreen {
         style.sheet?.insertRule(`@keyframes RightToLeft { ${from} ${to} }`, 0);
     }
 
-    push(item: pushItem, opts: ScreenOpsTypes | object = {}) {
-        const options = {...this.options, opts};
-        const {onStart, onEnd, top} = options;
+    push(item: pushItem, opts: Partial<ScreenOpsTypes>) {
+        const options = {...this.options, ...opts};
+        const {onStart, onEnd, top, bottom} = options;
         const bulletContainer = getContainer({
             ...options,
             currScreen: this,
         });
+        const bulletStyle = {
+            top,
+            bottom,
+        };
         // 加入当前存在的弹幕列表
         this.bullets.push(bulletContainer);
         const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
         if (currIdletrack === -1 || this.allPaused) {
             // 全部暂停或通道全被占用的情况
-            this.queues.push([item, bulletContainer, top]);
+            this.queues.push([item, bulletContainer, bulletStyle]);
         } else {
-            this._render(item, bulletContainer, currIdletrack, top);
+            this._render(item, bulletContainer, currIdletrack, bulletStyle);
         }
 
         if (onStart) {
@@ -199,16 +203,21 @@ class BulletScreen {
         return idx;
     }
 
-    private _render = (item: pushItem, container: HTMLElement, track: number, top?: string) => {
+    private _render = (item: pushItem, container: HTMLElement, track: number, styleOption: BulletStyle) => {
         this.target.appendChild(container);
         const {gap, trackHeight} = this.options;
+        const {top, bottom} = styleOption;
         ReactDOM.render(
             this.getRenderDom(item),
             container,
             () => {
                 const trackTop = track * trackHeight;
                 container.dataset.track = `${track}`;
-                container.style.top = typeof (top) !== 'undefined' ? top : `${trackTop}px`;
+                if (bottom) {
+                    container.style.bottom = bottom;
+                } else {
+                    container.style.top = typeof (top) !== 'undefined' ? top : `${trackTop}px`;
+                }
                 const options = {
                     root: this.target,
                     rootMargin: `0px ${gap} 0px 0px`,
@@ -226,9 +235,9 @@ class BulletScreen {
                                 const pushQueues = [...this.queues];
                                 this.queues = [];
                                 for (const queueInfo of pushQueues) {
-                                    const [item, container, customTop] = queueInfo;
+                                    const [item, container, customStyle] = queueInfo;
                                     const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
-                                    this._render(item, container, currIdletrack, customTop);
+                                    this._render(item, container, currIdletrack, customStyle || {});
                                 }
                             } else {
                                 if (typeof (trackIdx) !== 'undefined') {
