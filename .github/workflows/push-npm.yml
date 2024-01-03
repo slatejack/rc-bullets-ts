@@ -1,7 +1,7 @@
 name: Publish Package to npmjs & github package
 on:
-  release:
-    types: [ published ]
+  push:
+    branches: [ "master" ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,3 +22,5 @@ jobs:
           node-version: '14.x'
           registry-url: 'https://npm.pkg.github.com'
       - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
