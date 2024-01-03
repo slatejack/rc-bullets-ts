@@ -26,7 +26,10 @@
     "stylelint": "^14.11.0",
     "stylelint-scss": "^4.3.0"
   },
-  "repository": "slatejack/rc-bullets-ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slatejack/rc-bullets-ts.git"
+  },
   "devDependencies": {
     "@babel/core": "^7.19.0",
     "@typescript-eslint/eslint-plugin": "^5.37.0",
