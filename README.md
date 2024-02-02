@@ -8,6 +8,7 @@
 
 ## 注意！
 
+> ⚠️ 更新至v1.4.0版本后，支持使用resize()方法重新计算展示窗口尺寸及弹幕动画起始位置
 > ⚠️ 更新至v1.1.1版本后，修复了之前版本中暂停全部弹幕后继续播放时可能导致轨道计算出错的问题  
 > ⚠️ 更新至v1.1.0版本后，修复了之前版本useBullentScreen拼写问题，由`useBullentScreen` -> `useBulletScreen`
 > 感谢[@hellohejinyu](https://github.com/hellohejinyu)指出  
