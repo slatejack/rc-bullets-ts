@@ -19,7 +19,16 @@ declare class BulletScreen {
      * @param screen
      */
     initBulletAnimate(screen: HTMLElement): void;
+    /**
+     * 发送弹幕
+     * @param item
+     * @param opts
+     */
     push(item: pushItem, opts: Partial<ScreenOpsTypes>): string;
+    /**
+     * 获取需要渲染的dom样式
+     * @param Item
+     */
     getRenderDom(Item: pushItem): JSX.Element;
     _toggleAnimateStatus: (id: string | null, status?: string) => void;
     pause(id?: string | null): void;
@@ -27,6 +36,10 @@ declare class BulletScreen {
     hide(): void;
     show(): void;
     clear(id?: null): void;
+    /**
+     * 样式重置
+     */
+    resize(): void;
     /**
      * 获取播放轨道
      * @returns
