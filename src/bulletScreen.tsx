@@ -61,6 +61,11 @@ class BulletScreen {
         style.sheet?.insertRule(`@keyframes RightToLeft { ${from} ${to} }`, 0);
     }
 
+    /**
+     * 发送弹幕
+     * @param item
+     * @param opts
+     */
     push(item: pushItem, opts: Partial<ScreenOpsTypes>) {
         const options = {...this.options, ...opts};
         const {onStart, onEnd, top, bottom} = options;
@@ -101,6 +106,10 @@ class BulletScreen {
         return bulletContainer.id;
     }
 
+    /**
+     * 获取需要渲染的dom样式
+     * @param Item
+     */
     getRenderDom(Item: pushItem) {
         if (React.isValidElement(Item)) {
             return Item;
@@ -170,6 +179,15 @@ class BulletScreen {
     }
 
     /**
+     * 样式重置
+     */
+    resize() {
+        const {trackHeight} = this.options;
+        this.initBulletTrack(trackHeight);
+        this.initBulletAnimate(this.target);
+    }
+
+    /**
      * 获取播放轨道
      * @returns
      */
@@ -226,8 +244,6 @@ class BulletScreen {
                 const observer = new IntersectionObserver(enteries => {
                     for (const entry of enteries) {
                         const {intersectionRatio, target, isIntersecting} = entry;
-                        console.log('bullet id', target.id, intersectionRatio, isIntersecting);
-                        console.log('resTarget', this.target, entry);
                         if (intersectionRatio >= 1) {
                             const curTaget = target as HTMLElement;
                             const trackIdx = typeof (curTaget.dataset.track) === 'undefined' ? undefined : +curTaget.dataset.track;

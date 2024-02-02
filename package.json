@@ -1,6 +1,6 @@
 {
   "name": "rc-bullets-ts",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "一个简单的react弹幕库",
   "main": "dist/main.js",
   "module": "dist/main.js",
