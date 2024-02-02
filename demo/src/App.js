@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
-import './App.css';
 import BulletScreen, {StyledBullet} from 'rc-bullets-ts';
+import './App.css';
 
 function App() {
   const isPause = useRef(false);
@@ -8,6 +8,14 @@ function App() {
   useEffect(() => {
     // 给页面中某个元素初始化弹幕屏幕，一般为一个大区块。此处的配置项全局生效
     barrageScreen.current = new BulletScreen('.screen-container', {duration: 10});
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) {
+        console.log('page is visible');
+        barrageScreen.current.resize();
+      } else {
+        console.log('page is invisible');
+      }
+    });
   }, []);
 
   /**
@@ -16,16 +24,16 @@ function App() {
    */
   const handleSend = (barrageInfo) => {
     if (barrageInfo) {
-      barrageScreen.current.push(
-        <StyledBullet
-          head={barrageInfo.img}
-          msg={barrageInfo.msg}
-          backgroundColor="rgba(0,0,0,0.4)"
-        />,
-        {
-          bottom: '9px', // 指定所有弹幕距离容器底部距离为9px
-        }
-      );
+      setInterval(() => {
+        barrageScreen.current.push(
+          <StyledBullet
+            head={barrageInfo.img}
+            msg={barrageInfo.msg}
+            backgroundColor="rgba(0,0,0,0.4)"
+          />,
+          {}
+        );
+      }, 500);
     }
   };
 
