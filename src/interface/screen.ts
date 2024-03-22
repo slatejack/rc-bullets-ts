@@ -34,10 +34,15 @@ interface BulletStyle {
     bottom?: string;
 }
 
+type AnimationPlayState = 'running' | 'paused';
+type TrackStatus = 'idle' | 'feed' | 'running';
+
 export type {
     pushItem,
     screenElement,
     ScreenOpsTypes,
     pushItemObj,
     BulletStyle,
+    AnimationPlayState,
+    TrackStatus,
 };

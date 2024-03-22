@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {defaultOptions, getContainer} from '@/utils/bulletHelper';
-import {BulletStyle, pushItem, screenElement, ScreenOpsTypes} from '@/interface/screen';
+import {AnimationPlayState, BulletStyle, pushItem, screenElement, ScreenOpsTypes} from '@/interface/screen';
 import {isPlainObject} from '@/utils/utils';
 import StyledBullet from './styleBullet';
-import {TRACK_STATUS} from '@/constants/common';
+import {ANIMATION_PLAY_STATE, TRACK_STATUS} from '@/constants/common';
 
 
 type queueType = [pushItem, HTMLElement, (BulletStyle | undefined)];
@@ -124,25 +124,25 @@ class BulletScreen {
         return <></>;
     }
 
-    _toggleAnimateStatus = (id: string | null, status = 'paused') => {
+    _toggleAnimateStatus = (id: string | null, status: AnimationPlayState = 'paused') => {
         const currItem = this.bullets.find(item => item.id == id);
         if (currItem) {
             currItem.style.animationPlayState = status;
             return;
         }
 
-        this.allPaused = status === 'paused';
+        this.allPaused = status === ANIMATION_PLAY_STATE.paused;
         this.bullets.forEach(item => {
             item.style.animationPlayState = status;
         });
     };
 
     pause(id: string | null = null) {
-        this._toggleAnimateStatus(id, 'paused');
+        this._toggleAnimateStatus(id, ANIMATION_PLAY_STATE.paused as AnimationPlayState);
     }
 
     resume(id: string | null = null) {
-        this._toggleAnimateStatus(id, 'running');
+        this._toggleAnimateStatus(id, ANIMATION_PLAY_STATE.running as AnimationPlayState);
     }
 
     hide() {
