@@ -4,6 +4,7 @@ import {defaultOptions, getContainer} from '@/utils/bulletHelper';
 import {BulletStyle, pushItem, screenElement, ScreenOpsTypes} from '@/interface/screen';
 import {isPlainObject} from '@/utils/utils';
 import StyledBullet from './styleBullet';
+import {TRACK_STATUS} from '@/constants/common';
 
 
 type queueType = [pushItem, HTMLElement, (BulletStyle | undefined)];
@@ -39,7 +40,7 @@ class BulletScreen {
      */
     initBulletTrack(trackHeight: number) {
         const {height} = this.target.getBoundingClientRect();
-        this.tracks = new Array(Math.floor(height / trackHeight)).fill('idle'); // idle代表闲置状态的轨道
+        this.tracks = new Array(Math.floor(height / trackHeight)).fill(TRACK_STATUS.free);
         const {position} = getComputedStyle(this.target);
         if (position === 'static') {
             this.target.style.position = 'relative';
@@ -173,7 +174,7 @@ class BulletScreen {
             item.remove();
         });
         const {height} = this.target.getBoundingClientRect();
-        this.tracks = new Array(Math.floor(height / this.options.trackHeight)).fill('idle');
+        this.tracks = new Array(Math.floor(height / this.options.trackHeight)).fill(TRACK_STATUS.free);
         this.queues = [];
         this.bullets = [];
     }
@@ -196,7 +197,7 @@ class BulletScreen {
         let idx = -1;
         // 优先取空闲状态的
         this.tracks.forEach((status, index) => {
-            if (status === 'idle') {
+            if (status === TRACK_STATUS.free) {
                 readyIdxs.push(index);
             }
         });
@@ -206,7 +207,7 @@ class BulletScreen {
         if (idx === -1) {
             // 其次是可以接上状态的
             this.tracks.forEach((status, index) => {
-                if (status === 'feed') {
+                if (status === TRACK_STATUS.feed) {
                     readyIdxs.push(index);
                 }
             });
@@ -216,7 +217,7 @@ class BulletScreen {
         }
         // 如果此时状态值不等于-1，则说明该轨道在占用中
         if (idx !== -1) {
-            this.tracks[idx] = 'running';
+            this.tracks[idx] = TRACK_STATUS.occupied;
         }
         return idx;
     }
@@ -257,7 +258,7 @@ class BulletScreen {
                                 }
                             } else {
                                 if (typeof (trackIdx) !== 'undefined') {
-                                    this.tracks[trackIdx] = 'feed';
+                                    this.tracks[trackIdx] = TRACK_STATUS.feed;
                                 }
                             }
                         }
