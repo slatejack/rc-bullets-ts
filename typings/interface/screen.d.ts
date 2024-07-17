@@ -29,4 +29,6 @@ interface BulletStyle {
     top?: string;
     bottom?: string;
 }
-export type { pushItem, screenElement, ScreenOpsTypes, pushItemObj, BulletStyle, };
+declare type AnimationPlayState = 'running' | 'paused';
+declare type TrackStatus = 'idle' | 'feed' | 'running';
+export type { pushItem, screenElement, ScreenOpsTypes, pushItemObj, BulletStyle, AnimationPlayState, TrackStatus };

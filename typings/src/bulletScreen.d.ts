@@ -1,4 +1,4 @@
-import { BulletStyle, pushItem, screenElement, ScreenOpsTypes } from '@/interface/screen';
+import { AnimationPlayState, BulletStyle, pushItem, screenElement, ScreenOpsTypes } from '@/interface/screen';
 declare type queueType = [pushItem, HTMLElement, (BulletStyle | undefined)];
 declare class BulletScreen {
     target: HTMLElement;
@@ -30,7 +30,7 @@ declare class BulletScreen {
      * @param Item
      */
     getRenderDom(Item: pushItem): JSX.Element;
-    _toggleAnimateStatus: (id: string | null, status?: string) => void;
+    _toggleAnimateStatus: (id: string | null, status?: AnimationPlayState) => void;
     pause(id?: string | null): void;
     resume(id?: string | null): void;
     hide(): void;
