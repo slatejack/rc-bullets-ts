@@ -193,33 +193,31 @@ class BulletScreen {
      * @returns
      */
     private _getTrack() {
-        const readyIdxs: number[] = [];
-        let idx = -1;
-        // 优先取空闲状态的
-        this.tracks.forEach((status, index) => {
+        const [readyTrackIds, feedTrackIds] = this.tracks.reduce((prev, status, trackIndex) => {
+            const [readyTracks, feedTracks] = prev;
             if (status === TRACK_STATUS.free) {
-                readyIdxs.push(index);
+                // 如果此时轨道为空闲轨道，则将其索引作为id添加进最终可选择的轨道数组
+                readyTracks.push(trackIndex);
+            } else if (status === TRACK_STATUS.feed) {
+                feedTracks.push(trackIndex);
             }
-        });
-        if (readyIdxs.length) {
-            idx = readyIdxs[Math.floor(Math.random() * readyIdxs.length)];
+            return [readyTracks, feedTracks];
+        }, [[], []] as number[][]);
+
+        if (readyTrackIds.length) {
+            // 如果空闲轨道长度不为0，则随机选取一个轨道进行投放
+            const trackId = readyTrackIds[Math.floor(Math.random() * readyTrackIds.length)];
+            this.tracks[trackId] = TRACK_STATUS.occupied;
+            return trackId;
         }
-        if (idx === -1) {
-            // 其次是可以接上状态的
-            this.tracks.forEach((status, index) => {
-                if (status === TRACK_STATUS.feed) {
-                    readyIdxs.push(index);
-                }
-            });
-            if (readyIdxs.length) {
-                idx = readyIdxs[Math.floor(Math.random() * readyIdxs.length)];
-            }
+
+        if (feedTrackIds.length) {
+            // 其次，如果有轨道处于即将播放结束的状态，视为可以接上状态的轨道，也可以进行投放
+            const trackId = feedTrackIds[Math.floor(Math.random() * feedTrackIds.length)];
+            this.tracks[trackId] = TRACK_STATUS.occupied;
+            return trackId;
         }
-        // 如果此时状态值不等于-1，则说明该轨道在占用中
-        if (idx !== -1) {
-            this.tracks[idx] = TRACK_STATUS.occupied;
-        }
-        return idx;
+        return -1;
     }
 
     private _render = (item: pushItem, container: HTMLElement, track: number, styleOption: BulletStyle) => {
