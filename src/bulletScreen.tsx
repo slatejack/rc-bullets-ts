@@ -247,7 +247,7 @@ class BulletScreen {
               return;
             }
             const curTarget = target as HTMLElement;
-            const trackIdx = typeof (curTarget.dataset.track) === 'undefined' ? undefined : +curTarget.dataset.track;
+            const trackIdx = curTarget.dataset.track === undefined ? undefined : +curTarget.dataset.track;
             if (trackIdx === undefined) {
               return;
             }
@@ -257,9 +257,15 @@ class BulletScreen {
             const pushQueues = [...this.queues];
             this.queues = [];
             for (const queueInfo of pushQueues) {
+              // 把等待队列中的所有弹幕取出来进行渲染
               const [item, container, customStyle] = queueInfo;
               const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
-              this._render(item, container, currIdletrack, customStyle || {});
+              if (currIdletrack !== -1) {
+                this._render(item, container, currIdletrack, customStyle || {});
+              } else {
+                // 无可用轨道的情况, 还是将其添加进等待数组，等待下一次的渲染投放
+                this.queues.push(queueInfo);
+              }
             }
           }
         }, options);
