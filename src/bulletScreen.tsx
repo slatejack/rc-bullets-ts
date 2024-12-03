@@ -242,24 +242,30 @@ class BulletScreen {
                     rootMargin: `0px ${gap} 0px 0px`,
                     threshold: 1.0, // 完全处于可视范围中
                 };
-                const observer = new IntersectionObserver(enteries => {
-                    for (const entry of enteries) {
-                        const {intersectionRatio, target, isIntersecting} = entry;
-                        if (intersectionRatio >= 1) {
-                            const curTaget = target as HTMLElement;
-                            const trackIdx = typeof (curTaget.dataset.track) === 'undefined' ? undefined : +curTaget.dataset.track;
-                            if (this.queues.length && trackIdx !== undefined) {
-                                const pushQueues = [...this.queues];
-                                this.queues = [];
-                                for (const queueInfo of pushQueues) {
-                                    const [item, container, customStyle] = queueInfo;
-                                    const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
-                                    this._render(item, container, currIdletrack, customStyle || {});
-                                }
-                            } else {
-                                if (typeof (trackIdx) !== 'undefined') {
-                                    this.tracks[trackIdx] = TRACK_STATUS.feed;
-                                }
+                const observer = new IntersectionObserver(entries => {
+                    for (const entry of entries) {
+                        const {intersectionRatio, target} = entry;
+                        const curTaget = target as HTMLElement;
+                        const trackIdx = curTaget.dataset.track === undefined ? undefined : +curTaget.dataset.track;
+                        if (intersectionRatio < 1) {
+                            // 不完全可见时将轨道状态置为空闲，以便优先选取该轨道
+                            if (trackIdx) {
+                                this.tracks[trackIdx] = TRACK_STATUS.free;
+                            }
+                            continue;
+                        }
+
+                        if (this.queues.length && trackIdx === undefined) {
+                            const pushQueues = [...this.queues];
+                            this.queues = [];
+                            for (const queueInfo of pushQueues) {
+                                const [item, container, customStyle] = queueInfo;
+                                const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
+                                this._render(item, container, currIdletrack, customStyle || {});
+                            }
+                        } else {
+                            if (trackIdx !== undefined) {
+                                this.tracks[trackIdx] = TRACK_STATUS.feed;
                             }
                         }
                     }
