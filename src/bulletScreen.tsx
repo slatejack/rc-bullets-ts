@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import {defaultOptions, getContainer} from '@/utils/bulletHelper';
 import {AnimationPlayState, BulletStyle, pushItem, screenElement, ScreenOpsTypes} from '@/interface/screen';
 import {isPlainObject} from '@/utils/utils';
+import {ANIMATION_PLAY_STATE, SAFE_DISTANCE, TRACK_STATUS} from '@/constants/common';
 import StyledBullet from './styleBullet';
-import {ANIMATION_PLAY_STATE, TRACK_STATUS} from '@/constants/common';
 
 let createRoot: any;
 try {
@@ -262,36 +262,95 @@ class BulletScreen {
 
     /**
      * 获取播放轨道
-     * @returns
+     * @returns 可用的轨道索引，如果没有可用轨道则返回-1
      */
     private _getTrack() {
-        const readyIdxs: number[] = [];
-        let idx = -1;
-        // 优先取空闲状态的
-        this.tracks.forEach((status, index) => {
-            if (status === TRACK_STATUS.free) {
-                readyIdxs.push(index);
-            }
-        });
-        if (readyIdxs.length) {
-            idx = readyIdxs[Math.floor(Math.random() * readyIdxs.length)];
-        }
-        if (idx === -1) {
-            // 其次是可以接上状态的
-            this.tracks.forEach((status, index) => {
-                if (status === TRACK_STATUS.feed) {
-                    readyIdxs.push(index);
+
+        // 获取容器尺寸
+        const containerRect = this.target.getBoundingClientRect();
+        const containerWidth = containerRect.width;
+
+        // 创建轨道分组
+        const emptyTracks: number[] = [];      // 完全空闲的轨道
+        const goodTracks: number[] = [];       // 有足够空间的轨道
+        const acceptableTracks: number[] = []; // 可接受但不理想的轨道
+
+        // 计算每个轨道的状态
+        for (let i = 0; i < this.tracks.length; i++) {
+            let isEmpty = true;
+            // 最新一条弹幕距离右侧的距离
+            let lastBulletRight = 0;
+            // 最新一条弹幕的宽度
+            let lastBulletWidth = 0;
+
+            // 查找该轨道上的所有弹幕
+            this.bullets.forEach(bullet => {
+                const trackIdx = bullet.dataset.track === undefined ? undefined : +bullet.dataset.track;
+                if (trackIdx === i) {
+                    isEmpty = false;
+                    const bulletRect = bullet.getBoundingClientRect();
+                    const bulletRight = bulletRect.right - containerRect.left;
+                    const bulletWidth = bulletRect.width;
+
+                    // 更新最新一条弹幕的信息
+                    if (bulletRight > lastBulletRight) {
+                        lastBulletRight = bulletRight;
+                        lastBulletWidth = bulletWidth;
+                    }
                 }
             });
-            if (readyIdxs.length) {
-                idx = readyIdxs[Math.floor(Math.random() * readyIdxs.length)];
+
+            // 根据轨道状态分类
+            if (isEmpty) {
+                emptyTracks.push(i);
+            } else {
+                const distanceToLastBullet = containerWidth - lastBulletRight;
+
+                // 有足够空间的轨道
+                if (distanceToLastBullet > SAFE_DISTANCE + lastBulletWidth) {
+                    goodTracks.push(i);
+                }
+                // 可接受但不理想的轨道
+                else if (distanceToLastBullet > lastBulletWidth / 2) {
+                    acceptableTracks.push(i);
+                }
             }
         }
-        // 如果此时状态值不等于-1，则说明该轨道在占用中
-        if (idx !== -1) {
-            this.tracks[idx] = TRACK_STATUS.occupied;
+
+        // 选择轨道，加入随机性
+        let selectedTrackIdx = -1;
+        const randomValue = Math.random();
+
+        // 随机选择逻辑
+        if (emptyTracks.length > 0 && randomValue < 0.8) {
+            // 80%概率从空轨道中随机选择
+            selectedTrackIdx = emptyTracks[Math.floor(Math.random() * emptyTracks.length)];
+        } else if (goodTracks.length > 0 && randomValue < 0.95) {
+            // 15%概率从良好轨道中随机选择
+            selectedTrackIdx = goodTracks[Math.floor(Math.random() * goodTracks.length)];
+        } else if (acceptableTracks.length > 0) {
+            // 5%概率从可接受轨道中随机选择
+            selectedTrackIdx = acceptableTracks[Math.floor(Math.random() * acceptableTracks.length)];
         }
-        return idx;
+
+        // 如果随机选择没有成功，按优先级选择
+        if (selectedTrackIdx === -1) {
+            if (emptyTracks.length > 0) {
+                // 优先选择空轨道
+                selectedTrackIdx = emptyTracks[Math.floor(Math.random() * emptyTracks.length)];
+            } else if (goodTracks.length > 0) {
+                // 其次选择良好轨道
+                selectedTrackIdx = goodTracks[Math.floor(Math.random() * goodTracks.length)];
+            } else if (acceptableTracks.length > 0) {
+                // 最后选择可接受轨道
+                selectedTrackIdx = acceptableTracks[Math.floor(Math.random() * acceptableTracks.length)];
+            }
+        } else {
+            // 此时已经找到了可用轨道，标记轨道占用
+            this.tracks[selectedTrackIdx] = TRACK_STATUS.occupied;
+        }
+
+        return selectedTrackIdx;
     }
 
     private _render = (item: pushItem, container: HTMLElement, track: number, styleOption: BulletStyle) => {
