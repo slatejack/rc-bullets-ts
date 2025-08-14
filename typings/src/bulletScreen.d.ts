@@ -1,5 +1,7 @@
+/// <reference types="react" />
 import { AnimationPlayState, BulletStyle, pushItem, screenElement, ScreenOpsTypes } from '@/interface/screen';
 declare type queueType = [pushItem, HTMLElement, (BulletStyle | undefined)];
+declare type ObserverMap = Map<string, IntersectionObserver>;
 declare class BulletScreen {
     target: HTMLElement;
     options: ScreenOpsTypes;
@@ -8,7 +10,9 @@ declare class BulletScreen {
     allHide: boolean;
     tracks: string[];
     queues: queueType[];
-    constructor(ele: screenElement, opts?: ScreenOpsTypes | object);
+    _observers: ObserverMap;
+    _styleElement: HTMLStyleElement | null;
+    constructor(ele: screenElement, opts?: Partial<ScreenOpsTypes>);
     /**
      * 初始化弹幕轨道
      * @param trackHeight
@@ -41,10 +45,24 @@ declare class BulletScreen {
      */
     resize(): void;
     /**
+     * 销毁方法，清理所有资源
+     */
+    destroy(): void;
+    /**
      * 获取播放轨道
-     * @returns
+     * @returns 可用的轨道索引，如果没有可用轨道则返回-1
      */
     private _getTrack;
     private _render;
+    /**
+     * 设置容器样式和观察者
+     * 将设置逻辑抽取为单独方法以避免代码重复
+     */
+    private _setupContainerAndObserver;
+    /**
+     * 使用旧版React API渲染
+     * 抽取为单独方法以便复用
+     */
+    private _renderWithLegacyAPI;
 }
 export default BulletScreen;

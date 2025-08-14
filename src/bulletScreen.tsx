@@ -6,8 +6,18 @@ import {isPlainObject} from '@/utils/utils';
 import StyledBullet from './styleBullet';
 import {ANIMATION_PLAY_STATE, TRACK_STATUS} from '@/constants/common';
 
+let createRoot: any;
+try {
+    const ReactDOMClient = require('react-dom/client');
+    createRoot = ReactDOMClient?.createRoot;
+} catch (e) {
+    // < React v18
+    createRoot = null;
+}
+
 
 type queueType = [pushItem, HTMLElement, (BulletStyle | undefined)];
+type ObserverMap = Map<string, IntersectionObserver>;
 
 class BulletScreen {
     target: HTMLElement; // dom容器对象实例
@@ -17,14 +27,16 @@ class BulletScreen {
     allHide = false; // 隐藏全部弹幕
     tracks: string[] = []; // 弹幕轨道
     queues: queueType[] = []; // 等待队列
+    _observers: ObserverMap = new Map(); // 存储观察者实例
+    _styleElement: HTMLStyleElement | null = null; // 存储样式元素引用
 
-    constructor(ele: screenElement, opts: ScreenOpsTypes | object = {}) {
+    constructor(ele: screenElement, opts: Partial<ScreenOpsTypes> = {}) {
         this.options = {...this.options, ...opts};
         const {trackHeight} = this.options;
         if (typeof ele === 'string') {
             const target = document.querySelector(ele);
             if (!target) {
-                throw new Error('The display target dose not exist');
+                throw new Error('The display target does not exist');
             }
             this.target = target as HTMLElement;
         } else {
@@ -52,10 +64,16 @@ class BulletScreen {
      * @param screen
      */
     initBulletAnimate(screen: HTMLElement) {
+        // 清理之前的样式元素
+        if (this._styleElement) {
+            this._styleElement.remove();
+        }
         const animateClass = 'BULLET_ANIMATE';
         const style = document.createElement('style');
         style.classList.add(animateClass);
         document.head.appendChild(style);
+        this._styleElement = style;
+
         const {width} = screen.getBoundingClientRect();
         const from = `from { visibility: visible; transform: translateX(${width}px); }`;
         const to = 'to { visibility: visible; transform: translateX(-100%); }';
@@ -99,8 +117,21 @@ class BulletScreen {
             if (onEnd) {
                 onEnd.call(null, bulletContainer.id, this);
             }
+
+            // 清理观察者
+            const observer = this._observers.get(bulletContainer.id);
+            if (observer) {
+                observer.disconnect();
+                this._observers.delete(bulletContainer.id);
+            }
+
             this.bullets = this.bullets.filter((obj) => obj.id !== bulletContainer.id);
-            ReactDOM.unmountComponentAtNode(bulletContainer);// react移除虚拟dom
+            try {
+                ReactDOM.unmountComponentAtNode(bulletContainer);
+            } catch (e) {
+                console.error('Error unmounting component:', e);
+            }
+
             bulletContainer.remove(); // 移除真实dom
         });
 
@@ -125,7 +156,7 @@ class BulletScreen {
     }
 
     _toggleAnimateStatus = (id: string | null, status: AnimationPlayState = 'paused') => {
-        const currItem = this.bullets.find(item => item.id == id);
+        const currItem = this.bullets.find(item => item.id === id);
         if (currItem) {
             currItem.style.animationPlayState = status;
             return;
@@ -160,23 +191,50 @@ class BulletScreen {
     }
 
     clear(id = null) {
-        const currItem = this.bullets.find(item => item.id == id);
+        // 清理单个弹幕
+        const currItem = this.bullets.find(item => item.id === id);
         if (currItem) {
-            ReactDOM.unmountComponentAtNode(currItem);
+            // 清理观察者
+            const observer = this._observers.get(currItem.id);
+            if (observer) {
+                observer.disconnect();
+                this._observers.delete(currItem.id);
+            }
+
+            try {
+                ReactDOM.unmountComponentAtNode(currItem);
+            } catch (e) {
+                console.error('Error unmounting component:', e);
+            }
+
             currItem.remove();
-            this.bullets = this.bullets.filter(function (item) {
-                return item.id !== id;
-            });
+            this.bullets = this.bullets.filter(item => item.id !== id);
             return;
         }
+
+        // 清理所有弹幕
         this.bullets.forEach(item => {
-            ReactDOM.unmountComponentAtNode(item);
+            // 清理观察者
+            const observer = this._observers.get(item.id);
+            if (observer) {
+                observer.disconnect();
+                this._observers.delete(item.id);
+            }
+
+            try {
+                ReactDOM.unmountComponentAtNode(item);
+            } catch (e) {
+                console.error('Error unmounting component:', e);
+            }
+
             item.remove();
         });
+
         const {height} = this.target.getBoundingClientRect();
         this.tracks = new Array(Math.floor(height / this.options.trackHeight)).fill(TRACK_STATUS.free);
         this.queues = [];
         this.bullets = [];
+        this._observers.clear();
     }
 
     /**
@@ -186,6 +244,20 @@ class BulletScreen {
         const {trackHeight} = this.options;
         this.initBulletTrack(trackHeight);
         this.initBulletAnimate(this.target);
+    }
+
+    /**
+     * 销毁方法，清理所有资源
+     */
+    destroy() {
+        // 清理所有弹幕
+        this.clear();
+
+        // 清理样式元素
+        if (this._styleElement) {
+            this._styleElement.remove();
+            this._styleElement = null;
+        }
     }
 
     /**
@@ -226,54 +298,119 @@ class BulletScreen {
         this.target.appendChild(container);
         const {gap, trackHeight} = this.options;
         const {top, bottom} = styleOption;
-        ReactDOM.render(
-            this.getRenderDom(item),
-            container,
-            () => {
-                const trackTop = track * trackHeight;
-                container.dataset.track = `${track}`;
-                if (bottom) {
-                    container.style.bottom = bottom;
-                } else {
-                    container.style.top = typeof (top) !== 'undefined' ? top : `${trackTop}px`;
-                }
-                const options = {
-                    root: this.target,
-                    rootMargin: `0px ${gap} 0px 0px`,
-                    threshold: 1.0, // 完全处于可视范围中
-                };
-                const observer = new IntersectionObserver(entries => {
-                    for (const entry of entries) {
-                        const {intersectionRatio, target} = entry;
-                        const curTaget = target as HTMLElement;
-                        const trackIdx = curTaget.dataset.track === undefined ? undefined : +curTaget.dataset.track;
-                        if (intersectionRatio < 1) {
-                            // 不完全可见时将轨道状态置为空闲，以便优先选取该轨道
-                            if (trackIdx) {
-                                this.tracks[trackIdx] = TRACK_STATUS.free;
-                            }
-                            continue;
-                        }
 
-                        if (this.queues.length && trackIdx === undefined) {
-                            const pushQueues = [...this.queues];
-                            this.queues = [];
-                            for (const queueInfo of pushQueues) {
-                                const [item, container, customStyle] = queueInfo;
-                                const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
-                                this._render(item, container, currIdletrack, customStyle || {});
-                            }
+        try {
+            // 获取要渲染的内容
+            const renderContent = this.getRenderDom(item);
+
+            // 根据React版本选择不同的渲染方式
+            if (createRoot) {
+                try {
+                    // React 18+
+                    const root = createRoot(container);
+                    root.render(renderContent);
+                    // 设置样式和观察者
+                    this._setupContainerAndObserver(container, track, trackHeight, top, bottom, gap);
+                } catch (e) {
+                    console.error('Error using createRoot:', e);
+                    // 操作降级
+                    this._renderWithLegacyAPI(renderContent, container, track, trackHeight, top, bottom, gap);
+                }
+            } else {
+                // < React 18
+                this._renderWithLegacyAPI(renderContent, container, track, trackHeight, top, bottom, gap);
+            }
+        } catch (e) {
+            console.error('Error rendering bullet:', e);
+        }
+    };
+
+    /**
+     * 设置容器样式和观察者
+     */
+    private _setupContainerAndObserver(
+        container: HTMLElement,
+        track: number,
+        trackHeight: number,
+        top?: string,
+        bottom?: string,
+        gap?: string
+    ) {
+        const trackTop = track * trackHeight;
+        container.dataset.track = `${track}`;
+
+        if (bottom) {
+            container.style.bottom = bottom;
+        } else {
+            container.style.top = typeof (top) !== 'undefined' ? top : `${trackTop}px`;
+        }
+
+        const options = {
+            root: this.target,
+            rootMargin: `0px ${gap} 0px 0px`,
+            threshold: 1.0, // 完全处于可视范围中
+        };
+
+        // 创建并存储观察者
+        const observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                const {intersectionRatio, target} = entry;
+                const curTarget = target as HTMLElement;
+                const trackIdx = curTarget.dataset.track === undefined ? undefined : +curTarget.dataset.track;
+
+                if (intersectionRatio < 1) {
+                    // 不完全可见时将轨道状态置为空闲，以便优先选取该轨道
+                    if (trackIdx !== undefined) {
+                        this.tracks[trackIdx] = TRACK_STATUS.free;
+                    }
+                    continue;
+                }
+
+                if (this.queues.length && trackIdx === undefined) {
+                    const pushQueues = [...this.queues];
+                    this.queues = [];
+                    for (const queueInfo of pushQueues) {
+                        const [item, container, customStyle] = queueInfo;
+                        const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
+                        if (currIdletrack !== -1) {
+                            this._render(item, container, currIdletrack, customStyle || {});
                         } else {
-                            if (trackIdx !== undefined) {
-                                this.tracks[trackIdx] = TRACK_STATUS.feed;
-                            }
+                            // 如果没有可用轨道，重新加入队列
+                            this.queues.push(queueInfo);
                         }
                     }
-                }, options);
-                observer.observe(container);
+                } else {
+                    if (trackIdx !== undefined) {
+                        this.tracks[trackIdx] = TRACK_STATUS.feed;
+                    }
+                }
+            }
+        }, options);
+
+        observer.observe(container);
+        this._observers.set(container.id, observer);
+    }
+
+    /**
+     * 使用旧版React API渲染
+     */
+    private _renderWithLegacyAPI(
+        content: React.ReactElement,
+        container: HTMLElement,
+        track: number,
+        trackHeight: number,
+        top?: string,
+        bottom?: string,
+        gap?: string
+    ) {
+        ReactDOM.render(
+            content,
+            container,
+            () => {
+                this._setupContainerAndObserver(container, track, trackHeight, top, bottom, gap);
             }
         );
-    };
+    }
 }
 
 export default BulletScreen;
