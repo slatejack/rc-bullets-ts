@@ -1,69 +1,24 @@
-import React, {useEffect, useRef} from 'react';
-import BulletScreen, {StyledBullet} from 'rc-bullets-ts';
-import './App.css';
+import React from 'react';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import Usage from './components/Usage';
+import CallToAction from './components/CallToAction';
+import Footer from './components/Footer';
+import Changelog from './components/Changelog';
+import Demo from './components/Demo';
 
 function App() {
-  const isPause = useRef(false);
-  const barrageScreen = useRef(null);
-  useEffect(() => {
-    // 给页面中某个元素初始化弹幕屏幕，一般为一个大区块。此处的配置项全局生效
-    barrageScreen.current = new BulletScreen('.screen-container', {duration: 10});
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) {
-        console.log('page is visible');
-        barrageScreen.current.resize();
-      } else {
-        console.log('page is invisible');
-      }
-    });
-  }, []);
-
-  /**
-   * 发送弹幕
-   * @param barrageInfo
-   */
-  const handleSend = (barrageInfo) => {
-    if (barrageInfo) {
-      setInterval(() => {
-        barrageScreen.current.push(
-          <StyledBullet
-            head={barrageInfo.img}
-            msg={barrageInfo.msg}
-            backgroundColor="rgba(0,0,0,0.4)"
-          />,
-          {}
-        );
-      }, 500);
-    }
-  };
-
-  /**
-   * 暂停/继续播放弹幕
-   */
-  const handlePause = () => {
-    if (isPause.current) {
-      barrageScreen.current.resume();
-      isPause.current = false;
-    } else {
-      barrageScreen.current.pause();
-      isPause.current = true;
-    }
-  };
   return (
-    <div className="screen-container">
-      <div className="tools">
-        <button
-          className="bt"
-          onClick={() => handleSend({
-            img: 'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
-            msg: '测试弹幕123',
-          })}
-        >
-          发送弹幕
-        </button>
-        <button className="bt" onClick={() => barrageScreen.current.clear()}>清空弹幕</button>
-        <button className="bt" onClick={handlePause}>暂停弹幕</button>
-      </div>
+    <div className="bg-gray-50">
+      <Navbar/>
+      <Hero/>
+      <Features/>
+      <Changelog/>
+      <Demo/>
+      <Usage/>
+      <CallToAction/>
+      <Footer/>
     </div>
   );
 }

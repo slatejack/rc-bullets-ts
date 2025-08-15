@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "rc-bullets-ts",
+  "name": "rc-bullets-ts - React 弹幕组件库",
   "icons": [
     {
       "src": "favicon.ico",

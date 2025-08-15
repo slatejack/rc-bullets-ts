@@ -56,12 +56,10 @@ declare class BulletScreen {
     private _render;
     /**
      * 设置容器样式和观察者
-     * 将设置逻辑抽取为单独方法以避免代码重复
      */
     private _setupContainerAndObserver;
     /**
      * 使用旧版React API渲染
-     * 抽取为单独方法以便复用
      */
     private _renderWithLegacyAPI;
 }
