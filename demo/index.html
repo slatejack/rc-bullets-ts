@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rc-bullets-ts - React 弹幕组件库</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .bullet-animation {
+            animation: bulletMove 8s linear infinite;
+        }
+        @keyframes bulletMove {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        .demo-container {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-comments text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800">rc-bullets-ts</h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="#features" class="text-gray-600 hover:text-blue-600 transition-colors">特性</a>
+                    <a href="#demo" class="text-gray-600 hover:text-blue-600 transition-colors">演示</a>
+                    <a href="#usage" class="text-gray-600 hover:text-blue-600 transition-colors">使用</a>
+                    <a href="https://github.com/slatejack/rc-bullets-ts" target="_blank" 
+                       class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center space-x-2">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="fade-in">
+                <h1 class="text-5xl font-bold mb-6">rc-bullets-ts</h1>
+                <p class="text-xl mb-8 max-w-3xl mx-auto">
+                    一个功能强大、类型安全的 React 弹幕组件库，让您轻松为应用添加炫酷的弹幕效果
+                </p>
+                <div class="flex justify-center space-x-4 mb-12">
+                    <a href="#demo" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        查看演示
+                    </a>
+                    <a href="https://github.com/slatejack/rc-bullets-ts" target="_blank" 
+                       class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                        开始使用
+                    </a>
+                </div>
+                
+                <!-- 技术标签 -->
+                <div class="flex justify-center flex-wrap gap-3">
+                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">React</span>
+                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">TypeScript</span>
+                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">弹幕</span>
+                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">开源</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性介绍 -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">核心特性</h2>
+                <p class="text-xl text-gray-600">为什么选择 rc-bullets-ts？</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl hover-scale">
+                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-code text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">TypeScript 支持</h3>
+                    <p class="text-gray-600">完整的 TypeScript 类型定义，提供更好的开发体验和代码提示</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl hover-scale">
+                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-rocket text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">高性能</h3>
+                    <p class="text-gray-600">优化的渲染机制，支持大量弹幕同时显示而不影响性能</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl hover-scale">
+                    <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-cogs text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">高度可定制</h3>
+                    <p class="text-gray-600">丰富的配置选项，支持自定义样式、动画和行为</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-xl hover-scale">
+                    <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-mobile-alt text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">响应式设计</h3>
+                    <p class="text-gray-600">完美适配各种屏幕尺寸，移动端和桌面端都有优秀体验</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-8 rounded-xl hover-scale">
+                    <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-plug text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">易于集成</h3>
+                    <p class="text-gray-600">简单的 API 设计，几行代码即可集成到现有项目中</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-8 rounded-xl hover-scale">
+                    <div class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-heart text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">开源免费</h3>
+                    <p class="text-gray-600">MIT 许可证，完全开源免费，社区驱动持续更新</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 演示区域 -->
+    <section id="demo" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">实时演示</h2>
+                <p class="text-xl text-gray-600">体验弹幕效果的魅力</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                <div class="demo-container mb-6" id="demoContainer">
+                    <img src="https://zhiyan-ai-agent-with-1258344702.cos.ap-guangzhou.tencentcos.cn/with/b4f05b50-d22c-4e22-8a62-c4ffa00331a1/image_1755163409_1_1.jpg" 
+                         alt="弹幕演示背景" class="w-full h-full object-cover rounded-lg opacity-20">
+                    <!-- 弹幕将在这里动态生成 -->
+                </div>
+                
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <button onclick="addBullet('欢迎使用 rc-bullets-ts! 🎉')" 
+                            class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        发送弹幕
+                    </button>
+                    <button onclick="addBullet('这个组件库太棒了! ⭐')" 
+                            class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                        点赞弹幕
+                    </button>
+                    <button onclick="addBullet('TypeScript 支持真香! 💯')" 
+                            class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition-colors">
+                        技术弹幕
+                    </button>
+                    <button onclick="clearBullets()" 
+                            class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                        清空弹幕
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 弹幕效果展示图 -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <img src="https://zhiyan-ai-agent-with-1258344702.cos.ap-guangzhou.tencentcos.cn/with/2f42ea9f-d32a-4d42-8639-85cc14daf035/image_1755162986_3_1.png" 
+                         alt="弹幕效果示例" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">多样化弹幕样式</h3>
+                        <p class="text-gray-600">支持不同颜色、大小和动画效果的弹幕</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <img src="https://zhiyan-ai-agent-with-1258344702.cos.ap-guangzhou.tencentcos.cn/with/041b77ed-3254-440f-ad17-d0485218305d/image_1755162986_4_1.png" 
+                         alt="弹幕规范" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">标准化实现</h3>
+                        <p class="text-gray-600">遵循 W3C 弹幕标准，确保兼容性和可访问性</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使用方法 -->
+    <section id="usage" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">快速开始</h2>
+                <p class="text-xl text-gray-600">几分钟内集成到您的项目</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">安装</h3>
+                    <div class="code-block text-green-400 font-mono text-sm mb-8">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-400"># 使用 npm</span>
+                            <button onclick="copyCode('npm install rc-bullets-ts')" class="text-blue-400 hover:text-blue-300">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div>npm install rc-bullets-ts</div>
+                        <br>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-400"># 使用 yarn</span>
+                            <button onclick="copyCode('yarn add rc-bullets-ts')" class="text-blue-400 hover:text-blue-300">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div>yarn add rc-bullets-ts</div>
+                    </div>
+                    
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">基础用法</h3>
+                    <div class="code-block text-blue-300 font-mono text-sm w-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-gray-400">// React 组件示例</span>
+                            <button onclick="copyCode(basicUsageCode)" class="text-blue-400 hover:text-blue-300">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="leading-relaxed">
+                            <div class="mb-2">
+                                <span class="text-purple-300">import</span> <span class="text-yellow-300">React</span> <span class="text-purple-300">from</span> <span class="text-green-300">'react'</span>;
+                            </div>
+                            <div class="mb-4">
+                                <span class="text-purple-300">import</span> { <span class="text-yellow-300">BulletScreen</span> } <span class="text-purple-300">from</span> <span class="text-green-300">'rc-bullets-ts'</span>;
+                            </div>
+                            
+                            <div class="mb-2">
+                                <span class="text-purple-300">const</span> <span class="text-yellow-300">App</span> = () => {
+                            </div>
+                            <div class="mb-4 ml-4">
+                                <span class="text-purple-300">const</span> [<span class="text-yellow-300">bullets</span>, <span class="text-yellow-300">setBullets</span>] = <span class="text-blue-300">React.useState</span>([]);
+                            </div>
+                            
+                            <div class="mb-2 ml-4">
+                                <span class="text-purple-300">const</span> <span class="text-yellow-300">addBullet</span> = (<span class="text-orange-300">text</span>) => {
+                            </div>
+                            <div class="mb-2 ml-8">
+                                <span class="text-yellow-300">setBullets</span>(<span class="text-orange-300">prev</span> => [...<span class="text-orange-300">prev</span>, {
+                            </div>
+                            <div class="mb-1 ml-12">
+                                <span class="text-red-300">id</span>: <span class="text-blue-300">Date.now</span>(),
+                            </div>
+                            <div class="mb-1 ml-12">
+                                <span class="text-red-300">text</span>,
+                            </div>
+                            <div class="mb-1 ml-12">
+                                <span class="text-red-300">color</span>: <span class="text-green-300">'#fff'</span>,
+                            </div>
+                            <div class="mb-1 ml-12">
+                                <span class="text-red-300">fontSize</span>: <span class="text-orange-300">16</span>,
+                            </div>
+                            <div class="mb-1 ml-12">
+                                <span class="text-red-300">speed</span>: <span class="text-orange-300">5</span>
+                            </div>
+                            <div class="mb-2 ml-8">
+                                }]);
+                            </div>
+                            <div class="mb-4 ml-4">
+                                };
+                            </div>
+                            
+                            <div class="mb-2 ml-4">
+                                <span class="text-purple-300">return</span> (
+                            </div>
+                            <div class="mb-1 ml-8">
+                                &lt;<span class="text-red-300">div</span> <span class="text-blue-300">className</span>=<span class="text-green-300">"bullet-container"</span>&gt;
+                            </div>
+                            <div class="mb-1 ml-12">
+                                &lt;<span class="text-red-300">BulletScreen</span>
+                            </div>
+                            <div class="mb-1 ml-16">
+                                <span class="text-blue-300">bullets</span>={<span class="text-yellow-300">bullets</span>}
+                            </div>
+                            <div class="mb-1 ml-16">
+                                <span class="text-blue-300">width</span>={<span class="text-orange-300">800</span>}
+                            </div>
+                            <div class="mb-1 ml-16">
+                                <span class="text-blue-300">height</span>={<span class="text-orange-300">400</span>}
+                            </div>
+                            <div class="mb-1 ml-16">
+                                <span class="text-blue-300">autoPlay</span>={<span class="text-orange-300">true</span>}
+                            </div>
+                            <div class="mb-1 ml-16">
+                                <span class="text-blue-300">loop</span>={<span class="text-orange-300">false</span>}
+                            </div>
+                            <div class="mb-1 ml-12">
+                                /&gt;
+                            </div>
+                            <div class="mb-1 ml-12">
+                                &lt;<span class="text-red-300">button</span> <span class="text-blue-300">onClick</span>={() => <span class="text-yellow-300">addBullet</span>(<span class="text-green-300">'Hello!'</span>)}&gt;
+                            </div>
+                            <div class="mb-1 ml-16">
+                                发送弹幕
+                            </div>
+                            <div class="mb-1 ml-12">
+                                &lt;/<span class="text-red-300">button</span>&gt;
+                            </div>
+                            <div class="mb-2 ml-8">
+                                &lt;/<span class="text-red-300">div</span>&gt;
+                            </div>
+                            <div class="mb-2 ml-4">
+                                );
+                            </div>
+                            <div class="mb-2">
+                                };
+                            </div>
+                            <div class="mb-4">
+                                <span class="text-purple-300">export default</span> <span class="text-yellow-300">App</span>;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">高级配置</h3>
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">🎨 样式定制</h4>
+                            <p class="text-gray-600">支持自定义弹幕颜色、字体大小、透明度等样式属性</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">⚡ 性能优化</h4>
+                            <p class="text-gray-600">内置虚拟化技术，支持数千条弹幕同时显示</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">🎯 事件处理</h4>
+                            <p class="text-gray-600">支持弹幕点击、悬停等交互事件</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">📱 响应式</h4>
+                            <p class="text-gray-600">自动适配不同屏幕尺寸，移动端友好</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 图片已移除 -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GitHub 统计 -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">项目统计</h2>
+                <p class="text-xl text-gray-600">开源社区的认可</p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center hover-scale">
+                    <div class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-star text-white text-2xl"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-2">⭐</div>
+                    <div class="text-gray-600">GitHub Stars</div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center hover-scale">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-code-branch text-white text-2xl"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-2">🔀</div>
+                    <div class="text-gray-600">Forks</div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center hover-scale">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-download text-white text-2xl"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-2">📦</div>
+                    <div class="text-gray-600">NPM Downloads</div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center hover-scale">
+                    <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-users text-white text-2xl"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-2">👥</div>
+                    <div class="text-gray-600">Contributors</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部 CTA -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-6">准备开始了吗？</h2>
+            <p class="text-xl mb-8">立即为您的项目添加炫酷的弹幕效果</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://github.com/slatejack/rc-bullets-ts" target="_blank"
+                   class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center space-x-2">
+                    <i class="fab fa-github"></i>
+                    <span>查看源码</span>
+                </a>
+                <a href="https://www.npmjs.com/package/rc-bullets-ts" target="_blank"
+                   class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors flex items-center justify-center space-x-2">
+                    <i class="fab fa-npm"></i>
+                    <span>NPM 安装</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-comments text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold">rc-bullets-ts</h3>
+                    </div>
+                    <p class="text-gray-400">专业的 React 弹幕组件库</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#features" class="hover:text-white transition-colors">特性介绍</a></li>
+                        <li><a href="#demo" class="hover:text-white transition-colors">在线演示</a></li>
+                        <li><a href="#usage" class="hover:text-white transition-colors">使用文档</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">资源</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="https://github.com/slatejack/rc-bullets-ts" target="_blank" class="hover:text-white transition-colors">GitHub</a></li>
+                        <li><a href="https://www.npmjs.com/package/rc-bullets-ts" target="_blank" class="hover:text-white transition-colors">NPM</a></li>
+                        <li><a href="https://github.com/slatejack/rc-bullets-ts/issues" target="_blank" class="hover:text-white transition-colors">问题反馈</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">社区</h4>
+                    <div class="flex space-x-4">
+                        <a href="https://github.com/slatejack/rc-bullets-ts" target="_blank" 
+                           class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 rc-bullets-ts. MIT License. Made with ❤️ by the community.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
