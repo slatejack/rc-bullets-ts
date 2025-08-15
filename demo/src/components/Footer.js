@@ -7,7 +7,7 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-cente logo">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-cente logo">
               </div>
               <h3 className="text-lg font-semibold">rc-bullets-ts</h3>
             </div>
@@ -26,9 +26,12 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">资源</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="https://github.com/slatejack/rc-bullets-ts" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a></li>
-              <li><a href="https://www.npmjs.com/package/rc-bullets-ts" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">NPM</a></li>
-              <li><a href="https://github.com/slatejack/rc-bullets-ts/issues" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">问题反馈</a></li>
+              <li><a href="https://github.com/slatejack/rc-bullets-ts" target="_blank" rel="noopener noreferrer"
+                     className="hover:text-white transition-colors">GitHub</a></li>
+              <li><a href="https://www.npmjs.com/package/rc-bullets-ts" target="_blank" rel="noopener noreferrer"
+                     className="hover:text-white transition-colors">NPM</a></li>
+              <li><a href="https://github.com/slatejack/rc-bullets-ts/issues" target="_blank" rel="noopener noreferrer"
+                     className="hover:text-white transition-colors">问题反馈</a></li>
             </ul>
           </div>
 
