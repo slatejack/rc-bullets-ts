@@ -1,45 +1,47 @@
-# rc-bullets-ts
+<div align="center">
 
-> 👏 基于 rc-bullets 库使用`typescript`结合`webpack`
-> 进行重构，为后续项目开发提供更安全的类型支持与拓展性支持。感谢原作者：[@zerosoul](https://github.com/zerosoul) 提供支持  
-> 🌈 基于 CSS3 Animation，使用 React 构建，可扩展，高性能。  
-> 💻 原项目地址：https://github.com/zerosoul/rc-bullets  
-[![NPM](https://img.shields.io/npm/v/rc-bullets-ts.svg)](https://www.npmjs.com/package/rc-bullets-ts) [![NPM downloads](https://img.shields.io/npm/dm/rc-bullets-ts.svg)](http://npmjs.com/package/rc-bullets-ts)
+[![NPM](./demo/src/assets/img/logo.svg)](https://slatejack.github.io/rc-bullets-ts/)
 
-## 注意！
+</div>
+<div align="center">
+<h1>rc-bullets-ts</h1>
+</div>
+<div align="center">
 
-> ⚠️ 更新至v1.4.0版本后，支持使用resize()方法重新计算展示窗口尺寸及弹幕动画起始位置  
-> ⚠️ 更新至v1.1.1版本后，修复了之前版本中暂停全部弹幕后继续播放时可能导致轨道计算出错的问题  
-> ⚠️ 更新至v1.1.0版本后，修复了之前版本useBullentScreen拼写问题，由`useBullentScreen` -> `useBulletScreen`
-> 感谢[@hellohejinyu](https://github.com/hellohejinyu)指出  
-> ⚠️ 如之前安装版本存在弹幕大面积重合及消失问题，请尝试升级npm库到最新版本。
+[![NPM](https://img.shields.io/npm/v/rc-bullets-ts.svg)](https://www.npmjs.com/package/rc-bullets-ts)
+[![NPM downloads](https://img.shields.io/npm/dm/rc-bullets-ts.svg)](http://npmjs.com/package/rc-bullets-ts)
 
-## 体验
+</div>
 
-> 下载`demo`文件夹，运行`npm install`完成依赖安装后，执行`npm run start`即可体验项目
+> 🌈 基于 CSS3 Animation，使用 React 构建的高性能弹幕库，支持TypeScript，可扩展性强。  
+> 👏 基于 [rc-bullets](https://github.com/zerosoul/rc-bullets) 库使用 `typescript` 结合 `webpack`
+> 进行重构，为项目开发提供更安全的类型支持与拓展性支持。感谢原作者：[@zerosoul](https://github.com/zerosoul) 提供支持。
 
-## 安装
+## 📢 项目官网
 
-npm:
+https://slatejack.github.io/rc-bullets-ts/
+
+## 🎮 在线体验
+
+> 下载 `demo` 文件夹，运行 `npm install` 完成依赖安装后，执行 `npm run start` 即可体验项目
+
+## 📦 安装
 
 ```bash
+# npm
 npm install --save rc-bullets-ts
-```
 
-yarn:
-
-```bash
+# yarn
 yarn add rc-bullets-ts
 ```
 
-## 初始化一个简单的弹幕场景
+## 🚀 快速开始
 
 ```jsx
 import BulletScreen, {StyledBullet} from 'rc-bullets-ts'
 import {useEffect, useRef, useState} from 'react'
 
-const headUrl =
-  'https://zerosoul.github.io/rc-bullets/assets/img/heads/girl.jpg'
+const headUrl = 'https://zerosoul.github.io/rc-bullets/assets/img/heads/girl.jpg'
 
 const Demo = () => {
   const screenElRef = useRef < HTMLDivElement > (null)
@@ -98,69 +100,90 @@ const Demo = () => {
 export default Demo
 ```
 
-## 特性
+## ✨ 特性
 
-- 支持传入 React 组件，灵活控制弹幕内容和 UI，并提供一个默认样式组件：`<StyledBullet/>`
-- 弹幕屏幕管理：清屏，暂停，隐藏（后续可能会加入针对单个弹幕的控制）
-- 弹幕动画参数化：运动函数（匀速/ease/步进/cubic-bezier）、时长（秒）、循环次数、延迟等
-- 鼠标悬浮弹幕暂停
+- 💪 支持传入 React 组件，灵活控制弹幕内容和 UI，并提供默认样式组件：`<StyledBullet/>`
+- 🎛️ 弹幕屏幕管理：清屏、暂停、隐藏
+- ⚙️ 弹幕动画参数化：运动函数（匀速/ease/步进/cubic-bezier）、时长、循环次数、延迟等
+- 🖱️ 鼠标悬浮弹幕暂停
 
-## 常用 API
+## 📚 API 文档
 
-- 初始化弹幕屏幕：`const screen = new BulletScreen(<queryString>|<HTMLElement>,[<option>])`，此处的`option`
-  和下面的一致，偏向全局初始化，没有则使用默认值，每次发送弹幕不传则使用默认或全局设置，传了则该条弹幕覆盖全局设置。
-- 发送弹幕：`const bulletId = screen.push(<string>|<ReactElement>,[<option>])`
+### 初始化弹幕屏幕
 
-`option`：
+```typescript
+const element: string | HTMLElement = '.bullets-container';
+const screen = new BulletScreen(element, {...options});
+```
 
-| 选项             | 含义         | 值类型           | 默认值       | 备注                                                                                                            |
-|----------------|------------|---------------|-----------|---------------------------------------------------------------------------------------------------------------|
-| top            | 弹幕位置       | string        | undefined | 强制指定距离容器顶部的高度，格式同 CSS 中的 top                                                                                  |
-| bottom         | 弹幕距离容器底部位置 | string        | undefined | 强制指定距离容器底部的高度，格式同 CSS 中的 bottom                                                                               |
-| trackHeight    | 轨道高度       | number        | 50        | 均分轨道的高度                                                                                                       |
-| onStart        | 自定义动画开始函数  | function      | null      | e.g.(bulletId,screen)=>{//do something}可以自定义一些动作，比如播放某个音效，在特定时间暂停该弹幕：screen.pause(bulletId)                   |
-| onEnd          | 自定义动画结束函数  | function      | null      | e.g.(bulletId,screen)=>{//do something}可以自定义一些动作，比如播放某个音效                                                     |
-| pauseOnClick   | 鼠标点击暂停     | boolean       | false     | 再次点击继续                                                                                                        |
-| pauseOnHover   | 鼠标悬停暂停     | boolean       | true      | 鼠标进入暂停，离开继续                                                                                                   |
-| loopCount      | 循环次数       | number/string | 1         | 值为‘infinite’时，表示无限循环                                                                                          |
-| duration       | 滚动时长       | number/string | 10        | 数字则单位为‘秒’，字符串则支持'10s'和'300ms'两种单位                                                                             |
-| delay          | 延迟         | number/string | 0         | 数字则单位为‘秒’，字符串则支持'10s'和'300ms'两种单位                                                                             | [animation-delay](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-delay)支持的所有值 |
-| direction      | 动画方向       | string        | normal    | [animation-direction](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)支持的所有值             |
-| animateTimeFun | 动画函数       | string        | linear:匀速 | [animation-timing-function](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function)支持的所有值 |
+此处的 `options` 和下面的一致，偏向全局初始化，没有则使用默认值。每次发送弹幕不传则使用默认或全局设置，传了则该条弹幕覆盖全局设置。
 
-- 弹幕清屏：`screen.clear([<bulletId>])`，无参则清除全部
-- 暂停弹幕：`screen.pause([<bulletId>])`，无参则暂停全部
-- 弹幕继续：`screen.resume([<bulletId>])`，无参则继续全部
-- 隐藏弹幕（滚动继续）：`screen.hide([<bulletId>])`，无参则隐藏全部
-- 显示弹幕：`screen.show([<bulletId>])`，无参则显示全部
--
+### 发送弹幕
 
-自带的一个弹幕样式组件：`<StyledBullet msg="<弹幕内容>" head="<头像地址>" color="<字体颜色>" backgroundColor="<背景色>" size="<尺寸:small|normal|large|huge|自定义大小,基于em机制，默认normal>">`
+```js
+const value: string | ReactElement | pushItemObj = '弹幕内容';
+const bulletId = screen.push(value, {...options});
+```
 
-## TO DO
+### 配置选项options
 
-- &#x2705; react hook
-- 暂时还未想好，欢迎提issues~
+| 选项             | 含义         | 值类型           | 默认值       | 备注                                                                                                             |
+|----------------|------------|---------------|-----------|----------------------------------------------------------------------------------------------------------------|
+| top            | 弹幕位置       | string        | undefined | 强制指定距离容器顶部的高度，格式同 CSS 中的 top                                                                                   |
+| bottom         | 弹幕距离容器底部位置 | string        | undefined | 强制指定距离容器底部的高度，格式同 CSS 中的 bottom                                                                                |
+| trackHeight    | 轨道高度       | number        | 50        | 均分轨道的高度                                                                                                        |
+| onStart        | 自定义动画开始函数  | function      | null      | e.g. (bulletId, screen) => { /* 自定义动作 */ }                                                                     |
+| onEnd          | 自定义动画结束函数  | function      | null      | e.g. (bulletId, screen) => { /* 自定义动作 */ }                                                                     |
+| pauseOnClick   | 鼠标点击暂停     | boolean       | false     | 再次点击继续                                                                                                         |
+| pauseOnHover   | 鼠标悬停暂停     | boolean       | true      | 鼠标进入暂停，离开继续                                                                                                    |
+| loopCount      | 循环次数       | number/string | 1         | 值为 'infinite' 时，表示无限循环                                                                                         |
+| duration       | 滚动时长       | number/string | 10        | 数字则单位为'秒'，字符串则支持 '10s' 和 '300ms' 两种单位                                                                          |
+| delay          | 延迟         | number/string | 0         | 数字则单位为'秒'，字符串则支持 '10s' 和 '300ms' 两种单位                                                                          |
+| direction      | 动画方向       | string        | normal    | [animation-direction](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction) 支持的所有值             |
+| animateTimeFun | 动画函数       | string        | linear    | [animation-timing-function](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function) 支持的所有值 |
 
-## 本地开发指引
+### 弹幕控制方法
 
-1. git clone
-   ```bash
-    git clone https://github.com/slatejack/rc-bullets-ts
-   ```
-2. 安装依赖
-   ```bash
-    npm install
-   ```
-3. 测试环境
-   ```bash
-    npm run dev
-   ```
-4. 打包正式
-   ```bash
-    npm run build
-   ```
+- **清屏**：`screen.clear([<bulletId>])` - 无参则清除全部
+- **暂停**：`screen.pause([<bulletId>])` - 无参则暂停全部
+- **继续**：`screen.resume([<bulletId>])` - 无参则继续全部
+- **隐藏**：`screen.hide([<bulletId>])` - 无参则隐藏全部（滚动继续）
+- **显示**：`screen.show([<bulletId>])` - 无参则显示全部
+- **重新计算尺寸**：`screen.resize()` - 重新计算展示窗口尺寸及弹幕动画起始位置
 
-## License
+### 内置样式组件
+
+```jsx
+<StyledBullet
+  msg="弹幕内容"
+  head="头像地址"
+  color="字体颜色"
+  backgroundColor="背景色"
+  size="尺寸" // small|normal|large|huge|自定义大小，基于em机制，默认normal
+/>
+```
+
+## 🔜 未来计划
+
+- ✅ React Hook
+- 📝 欢迎提交 issues 提供更多功能建议！
+
+## 🛠️ 本地开发指引
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/slatejack/rc-bullets-ts
+
+# 2. 安装依赖
+npm install
+
+# 3. 启动测试环境
+npm run dev
+
+# 4. 打包正式版本
+npm run build
+```
+
+## 📄 License
 
 MIT © [slatejack](https://github.com/slatejack)
