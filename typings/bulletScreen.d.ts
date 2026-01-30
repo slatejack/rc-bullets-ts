@@ -12,6 +12,7 @@ declare class BulletScreen {
     queues: queueType[];
     _observers: ObserverMap;
     _styleElement: HTMLStyleElement | null;
+    _queueCheckTimer: number | null;
     constructor(ele: screenElement, opts?: Partial<ScreenOpsTypes>);
     /**
      * 初始化弹幕轨道
@@ -62,5 +63,17 @@ declare class BulletScreen {
      * 使用旧版React API渲染
      */
     private _renderWithLegacyAPI;
+    /**
+     * 处理等待队列
+     */
+    private _processQueue;
+    /**
+     * 启动队列检查定时器
+     */
+    private _startQueueCheckTimer;
+    /**
+     * 停止队列检查定时器
+     */
+    private _stopQueueCheckTimer;
 }
 export default BulletScreen;

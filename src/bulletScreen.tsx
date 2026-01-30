@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {defaultOptions, getContainer} from '@/utils/bulletHelper';
-import {AnimationPlayState, BulletStyle, pushItem, screenElement, ScreenOpsTypes} from '@/interface/screen';
-import {isPlainObject} from '@/utils/utils';
-import {ANIMATION_PLAY_STATE, SAFE_DISTANCE, TRACK_STATUS} from '@/constants/common';
+import { defaultOptions, getContainer } from '@/utils/bulletHelper';
+import { AnimationPlayState, BulletStyle, pushItem, screenElement, ScreenOpsTypes } from '@/interface/screen';
+import { isPlainObject } from '@/utils/utils';
+import { ANIMATION_PLAY_STATE, SAFE_DISTANCE, TRACK_STATUS } from '@/constants/common';
 import StyledBullet from './styleBullet';
 
 let createRoot: any;
@@ -29,10 +29,11 @@ class BulletScreen {
     queues: queueType[] = []; // 等待队列
     _observers: ObserverMap = new Map(); // 存储观察者实例
     _styleElement: HTMLStyleElement | null = null; // 存储样式元素引用
+    _queueCheckTimer: number | null = null; // 队列检查定时器
 
     constructor(ele: screenElement, opts: Partial<ScreenOpsTypes> = {}) {
-        this.options = {...this.options, ...opts};
-        const {trackHeight} = this.options;
+        this.options = { ...this.options, ...opts };
+        const { trackHeight } = this.options;
         if (typeof ele === 'string') {
             const target = document.querySelector(ele);
             if (!target) {
@@ -44,6 +45,7 @@ class BulletScreen {
         }
         this.initBulletTrack(trackHeight);
         this.initBulletAnimate(this.target);
+        this._startQueueCheckTimer();
     }
 
     /**
@@ -51,9 +53,9 @@ class BulletScreen {
      * @param trackHeight
      */
     initBulletTrack(trackHeight: number) {
-        const {height} = this.target.getBoundingClientRect();
+        const { height } = this.target.getBoundingClientRect();
         this.tracks = new Array(Math.floor(height / trackHeight)).fill(TRACK_STATUS.free);
-        const {position} = getComputedStyle(this.target);
+        const { position } = getComputedStyle(this.target);
         if (position === 'static') {
             this.target.style.position = 'relative';
         }
@@ -74,7 +76,7 @@ class BulletScreen {
         document.head.appendChild(style);
         this._styleElement = style;
 
-        const {width} = screen.getBoundingClientRect();
+        const { width } = screen.getBoundingClientRect();
         const from = `from { visibility: visible; transform: translateX(${width}px); }`;
         const to = 'to { visibility: visible; transform: translateX(-100%); }';
         style.sheet?.insertRule(`@keyframes RightToLeft { ${from} ${to} }`, 0);
@@ -86,8 +88,8 @@ class BulletScreen {
      * @param opts
      */
     push(item: pushItem, opts: Partial<ScreenOpsTypes>) {
-        const options = {...this.options, ...opts};
-        const {onStart, onEnd, top, bottom} = options;
+        const options = { ...this.options, ...opts };
+        const { onStart, onEnd, top, bottom } = options;
         const bulletContainer = getContainer({
             ...options,
             currScreen: this,
@@ -96,13 +98,14 @@ class BulletScreen {
             top,
             bottom,
         };
-        // 加入当前存在的弹幕列表
-        this.bullets.push(bulletContainer);
+
         const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
         if (currIdletrack === -1 || this.allPaused) {
-            // 全部暂停或通道全被占用的情况
+            // 全部暂停或通道全被占用的情况，加入等待队列
             this.queues.push([item, bulletContainer, bulletStyle]);
         } else {
+            // 只有在真正渲染时才加入弹幕列表
+            this.bullets.push(bulletContainer);
             this._render(item, bulletContainer, currIdletrack, bulletStyle);
         }
 
@@ -116,6 +119,15 @@ class BulletScreen {
         bulletContainer.addEventListener('animationend', () => {
             if (onEnd) {
                 onEnd.call(null, bulletContainer.id, this);
+            }
+
+            // 释放轨道
+            const trackIdx = bulletContainer.dataset.track;
+            if (trackIdx !== undefined) {
+                const trackIndex = +trackIdx;
+                if (trackIndex >= 0 && trackIndex < this.tracks.length) {
+                    this.tracks[trackIndex] = TRACK_STATUS.free;
+                }
             }
 
             // 清理观察者
@@ -133,6 +145,9 @@ class BulletScreen {
             }
 
             bulletContainer.remove(); // 移除真实dom
+
+            // 动画结束后立即处理等待队列
+            this._processQueue();
         });
 
         return bulletContainer.id;
@@ -173,7 +188,15 @@ class BulletScreen {
     }
 
     resume(id: string | null = null) {
+        // 保存暂停状态
+        const wasAllPaused = this.allPaused;
+        
         this._toggleAnimateStatus(id, ANIMATION_PLAY_STATE.running as AnimationPlayState);
+
+        // 恢复全部弹幕时，处理等待队列
+        if (id === null && wasAllPaused) {
+            this._processQueue();
+        }
     }
 
     hide() {
@@ -194,6 +217,15 @@ class BulletScreen {
         // 清理单个弹幕
         const currItem = this.bullets.find(item => item.id === id);
         if (currItem) {
+            // 释放轨道
+            const trackIdx = currItem.dataset.track;
+            if (trackIdx !== undefined) {
+                const trackIndex = +trackIdx;
+                if (trackIndex >= 0 && trackIndex < this.tracks.length) {
+                    this.tracks[trackIndex] = TRACK_STATUS.free;
+                }
+            }
+
             // 清理观察者
             const observer = this._observers.get(currItem.id);
             if (observer) {
@@ -209,6 +241,9 @@ class BulletScreen {
 
             currItem.remove();
             this.bullets = this.bullets.filter(item => item.id !== id);
+            
+            // 释放轨道后处理队列
+            this._processQueue();
             return;
         }
 
@@ -230,7 +265,7 @@ class BulletScreen {
             item.remove();
         });
 
-        const {height} = this.target.getBoundingClientRect();
+        const { height } = this.target.getBoundingClientRect();
         this.tracks = new Array(Math.floor(height / this.options.trackHeight)).fill(TRACK_STATUS.free);
         this.queues = [];
         this.bullets = [];
@@ -241,7 +276,7 @@ class BulletScreen {
      * 样式重置
      */
     resize() {
-        const {trackHeight} = this.options;
+        const { trackHeight } = this.options;
         this.initBulletTrack(trackHeight);
         this.initBulletAnimate(this.target);
     }
@@ -252,6 +287,9 @@ class BulletScreen {
     destroy() {
         // 清理所有弹幕
         this.clear();
+
+        // 清理定时器
+        this._stopQueueCheckTimer();
 
         // 清理样式元素
         if (this._styleElement) {
@@ -345,8 +383,10 @@ class BulletScreen {
                 // 最后选择可接受轨道
                 selectedTrackIdx = acceptableTracks[Math.floor(Math.random() * acceptableTracks.length)];
             }
-        } else {
-            // 此时已经找到了可用轨道，标记轨道占用
+        }
+
+        // 如果找到了可用轨道，标记轨道占用
+        if (selectedTrackIdx !== -1) {
             this.tracks[selectedTrackIdx] = TRACK_STATUS.occupied;
         }
 
@@ -355,8 +395,8 @@ class BulletScreen {
 
     private _render = (item: pushItem, container: HTMLElement, track: number, styleOption: BulletStyle) => {
         this.target.appendChild(container);
-        const {gap, trackHeight} = this.options;
-        const {top, bottom} = styleOption;
+        const { gap, trackHeight } = this.options;
+        const { top, bottom } = styleOption;
 
         try {
             // 获取要渲染的内容
@@ -413,7 +453,7 @@ class BulletScreen {
         // 创建并存储观察者
         const observer = new IntersectionObserver(entries => {
             for (const entry of entries) {
-                const {intersectionRatio, target} = entry;
+                const { intersectionRatio, target } = entry;
                 const curTarget = target as HTMLElement;
                 const trackIdx = curTarget.dataset.track === undefined ? undefined : +curTarget.dataset.track;
 
@@ -421,27 +461,19 @@ class BulletScreen {
                     // 不完全可见时将轨道状态置为空闲，以便优先选取该轨道
                     if (trackIdx !== undefined) {
                         this.tracks[trackIdx] = TRACK_STATUS.free;
+                        // 轨道释放后，处理等待队列
+                        this._processQueue();
                     }
                     continue;
                 }
 
-                if (this.queues.length && trackIdx === undefined) {
-                    const pushQueues = [...this.queues];
-                    this.queues = [];
-                    for (const queueInfo of pushQueues) {
-                        const [item, container, customStyle] = queueInfo;
-                        const currIdletrack = this._getTrack(); // 获取播放的弹幕轨道
-                        if (currIdletrack !== -1) {
-                            this._render(item, container, currIdletrack, customStyle || {});
-                        } else {
-                            // 如果没有可用轨道，重新加入队列
-                            this.queues.push(queueInfo);
-                        }
-                    }
-                } else {
-                    if (trackIdx !== undefined) {
-                        this.tracks[trackIdx] = TRACK_STATUS.feed;
-                    }
+                // 弹幕完全可见时处理队列
+                if (this.queues.length > 0) {
+                    this._processQueue();
+                }
+
+                if (trackIdx !== undefined) {
+                    this.tracks[trackIdx] = TRACK_STATUS.feed;
                 }
             }
         }, options);
@@ -469,6 +501,54 @@ class BulletScreen {
                 this._setupContainerAndObserver(container, track, trackHeight, top, bottom, gap);
             }
         );
+    }
+
+    /**
+     * 处理等待队列
+     */
+    private _processQueue() {
+        if (this.queues.length === 0 || this.allPaused) {
+            return;
+        }
+
+        const pushQueues = [...this.queues];
+        this.queues = [];
+
+        for (const queueInfo of pushQueues) {
+            const [item, container, customStyle] = queueInfo;
+            const currIdletrack = this._getTrack();
+            if (currIdletrack !== -1) {
+                // 从队列中取出并渲染时，加入弹幕列表
+                this.bullets.push(container);
+                this._render(item, container, currIdletrack, customStyle || {});
+            } else {
+                // 如果没有可用轨道，重新加入队列
+                this.queues.push(queueInfo);
+            }
+        }
+    }
+
+    /**
+     * 启动队列检查定时器
+     */
+    private _startQueueCheckTimer() {
+        // 清理已存在的定时器
+        this._stopQueueCheckTimer();
+
+        // 每100ms检查一次队列
+        this._queueCheckTimer = window.setInterval(() => {
+            this._processQueue();
+        }, 100);
+    }
+
+    /**
+     * 停止队列检查定时器
+     */
+    private _stopQueueCheckTimer() {
+        if (this._queueCheckTimer !== null) {
+            clearInterval(this._queueCheckTimer);
+            this._queueCheckTimer = null;
+        }
     }
 }
 
