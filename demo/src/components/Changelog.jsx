@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 // 定义单个版本更新日志组件
-const VersionItem= ({ item }) => {
+const VersionItem = ({item}) => {
   // 根据类型获取背景颜色
   const getVersionBgColor = (isMajor) => {
     return isMajor ? 'bg-purple-500' : item.isLatest ? 'bg-green-500' : 'bg-gray-500';
@@ -73,7 +73,8 @@ const VersionItem= ({ item }) => {
     <div className="bg-white rounded-xl shadow-lg p-8 mb-8 hover-scale">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
-          <span className={`${getVersionBgColor(item.isMajor)} text-white px-4 py-2 rounded-full text-sm font-semibold`}>
+          <span
+            className={`${getVersionBgColor(item.isMajor)} text-white px-4 py-2 rounded-full text-sm font-semibold`}>
             {item.version}
           </span>
           <span className="text-gray-500">{item.date}</span>
@@ -109,13 +110,27 @@ const VersionItem= ({ item }) => {
   );
 };
 
-const Changelog= () => {
+const Changelog = () => {
   // 使用状态管理更新日志数据
   const [changelogItems] = useState([
     {
+      version: 'v1.6.1',
+      date: '2026-02-04',
+      isLatest: true,
+      changes: [
+        {
+          type: 'bugfix',
+          title: '问题修复',
+          items: [
+            '修复 弹幕等待队列消费问题\n',
+          ]
+        }
+      ]
+    },
+    {
       version: 'v1.6.0',
       date: '2025-08-15',
-      isLatest: true,
+      isLatest: false,
       changes: [
         {
           type: 'feature',
@@ -181,7 +196,7 @@ const Changelog= () => {
 
         <div className="max-w-4xl mx-auto">
           {changelogItems.map((item, index) => (
-            <VersionItem key={index} item={item} />
+            <VersionItem key={index} item={item}/>
           ))}
         </div>
 
