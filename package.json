@@ -1,7 +1,7 @@
 {
   "name": "rc-bullets-ts",
   "version": "1.6.1",
-  "description": "一个简单的react弹幕库",
+  "description": "\u4e00\u4e2a\u7b80\u5355\u7684react\u5f39\u5e55\u5e93",
   "main": "dist/main.js",
   "module": "dist/main.js",
   "types": "typings/app.d.ts",
@@ -24,7 +24,8 @@
     "postcss": "^8.4.31",
     "@babel/traverse": "^7.23.2",
     "braces": "^3.0.3",
-    "micromatch": "^4.0.8"
+    "micromatch": "^4.0.8",
+    "@types/node": "18.7.17"
   },
   "dependencies": {
     "@types/color-convert": "^2.0.0",
@@ -47,6 +48,7 @@
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.6.8",
     "@types/jest": "^29.5.14",
+    "@types/node": "18.7.17",
     "@typescript-eslint/eslint-plugin": "^5.37.0",
     "@typescript-eslint/parser": "^5.37.0",
     "babel-eslint": "^10.1.0",
